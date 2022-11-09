@@ -1,0 +1,28 @@
+################################################################################
+##                             Network interface                              ##
+################################################################################
+server:
+    # Address to which we bind (default: 127.0.0.1)
+    address: "0.0.0.0"
+    # Port on which we bind (default: 3000)
+    port: 3000
+
+################################################################################
+##                               Logging options                              ##
+################################################################################
+logging:
+  # The name of the folder where the logs are stored.
+  folder: logs
+  # Values: error, warn, info, http, verbose, debug, silly
+  level: http
+  # Default to false
+  console: true
+
+wallet:
+  manager_key: "key_store:manager"
+  access_secret: ${ACCESS_SECRET}
+
+key_store:
+  items:
+    - name: manager
+      file: test_manager.key
