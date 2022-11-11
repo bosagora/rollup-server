@@ -1,7 +1,9 @@
 {
     "compilerOptions": {
+        "sourceMap": true,
         "target": "es2020",
         "module": "commonjs",
+        "lib": ["esnext"],
         "strict": true,
         "esModuleInterop": true,
         "outDir": "dist",

@@ -9,6 +9,7 @@
  */
 
 import process from "process";
+import { SmartBuffer } from "smart-buffer";
 
 export class Utils {
     /**
@@ -33,22 +34,6 @@ export class Utils {
      */
     public static isNegativeInteger(value: string): boolean {
         return /^-([0-9]+)$/.test(value);
-    }
-
-    /**
-     * Check whether the string is a positive.
-     * @param value
-     */
-    public static isPositive(value: string): boolean {
-        return /^(\+)?[0-9]\d*(\.\d+)?$/.test(value);
-    }
-
-    /**
-     * Check whether the string is a negative.
-     * @param value
-     */
-    public static isNegative(value: string): boolean {
-        return /^-?[0-9]\d*(\.\d+)?$/.test(value);
     }
 
     /**
@@ -81,6 +66,66 @@ export class Utils {
     public static detachPrefixHex(value: string): string {
         if (value.substring(0, 2).toLowerCase() === "0x") return value.substring(2);
         else return value;
+    }
+
+    /**
+     * Read from the hex string
+     * @param hex The hex string
+     * @param target The buffer to output
+     * @returns The output buffer
+     */
+    public static readFromString(hex: string, target?: Buffer): Buffer {
+        const start = hex.substring(0, 2) === "0x" ? 2 : 0;
+        const length = (hex.length - start) >> 1;
+        if (target === undefined) target = Buffer.alloc(length);
+
+        for (let pos = 0, idx = start; idx < length * 2 + start; idx += 2, pos++)
+            target[pos] = parseInt(hex.substring(idx, idx + 2), 16);
+
+        return target;
+    }
+
+    /**
+     * Write to the hex string
+     * @param source The buffer to input
+     * @returns The hex string
+     */
+    public static writeToString(source: Buffer): string {
+        return "0x" + source.toString("hex");
+    }
+
+    /**
+     * Reads from `source` to return to the buffer by the requested bytes.
+     * An exception occurs when the size of the remaining data is less than the requested.
+     * @param source The instance of the SmartBuffer
+     * @param length The requested bytes
+     */
+    public static readBuffer(source: SmartBuffer, length: number): Buffer {
+        const remaining = source.remaining();
+        if (remaining < length) throw new Error(`Requested ${length} bytes but only ${remaining} bytes available`);
+
+        return source.readBuffer(length);
+    }
+
+    /**
+     * Compare the two Buffers, This compares the two buffers from the back to the front.
+     * If a is greater than b, it returns a positive number,
+     * if a is less than b, it returns a negative number,
+     * and if a and b are equal, it returns zero.
+     */
+    public static compareBuffer(a: Buffer, b: Buffer): number {
+        const min_length = Math.min(a.length, b.length);
+        for (let idx = 0; idx < min_length; idx++) {
+            const a_value = a[a.length - 1 - idx];
+            const b_value = b[b.length - 1 - idx];
+            if (a_value !== b_value) return a_value - b_value;
+        }
+
+        return a.length - b.length;
+    }
+
+    public static getTimeStamp(): number {
+        return Math.floor(new Date().getTime() / 1000);
     }
 }
 
