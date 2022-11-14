@@ -21,3 +21,8 @@ logging:
 wallet:
   manager_key: "${MANAGER_KEY}"
   access_secret: ${ACCESS_SECRET}
+
+node:
+  interval: 5
+  max_txs: 8
+

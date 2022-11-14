@@ -14,3 +14,7 @@ key_store:
     items:
         - name: manager
           file: test_manager.key
+
+node:
+    interval: 10
+    max_txs: 8

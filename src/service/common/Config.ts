@@ -35,6 +35,8 @@ export class Config implements IConfig {
 
     public key_store: KeyStoreConfig;
 
+    public node: NodeConfig;
+
     /**
      * Constructor
      */
@@ -43,6 +45,7 @@ export class Config implements IConfig {
         this.logging = new LoggingConfig();
         this.key_store = new KeyStoreConfig();
         this.wallet = new WalletConfig();
+        this.node = new NodeConfig();
     }
 
     /**
@@ -89,6 +92,7 @@ export class Config implements IConfig {
         this.logging.readFromObject(cfg.logging);
         this.wallet.readFromObject(cfg.wallet);
         this.key_store.readFromObject(cfg.key_store);
+        this.node.readFromObject(cfg.node);
     }
 
     public async decrypt() {
@@ -312,6 +316,43 @@ export class KeyStoreConfig implements IKeyStoreConfig {
 }
 
 /**
+ * Logging config
+ */
+export class NodeConfig implements INodeConfig {
+    public interval: number;
+    public max_txs: number;
+
+    /**
+     * Constructor
+     */
+    constructor() {
+        const defaults = NodeConfig.defaultValue();
+
+        this.interval = defaults.interval;
+        this.max_txs = defaults.max_txs;
+    }
+
+    /**
+     * Returns default value
+     */
+    public static defaultValue(): INodeConfig {
+        return {
+            interval: 600,
+            max_txs: 128,
+        };
+    }
+
+    /**
+     * Reads from Object
+     * @param config The object of ILoggingConfig
+     */
+    public readFromObject(config: INodeConfig) {
+        if (config.interval !== undefined) this.interval = config.interval;
+        if (config.max_txs !== undefined) this.max_txs = config.max_txs;
+    }
+}
+
+/**
  * The interface of server config
  */
 export interface IServerConfig {
@@ -365,6 +406,11 @@ export interface IKeyStoreConfig {
     getItemByID(name: string): IKeyStoreItemConfig | undefined;
 }
 
+export interface INodeConfig {
+    interval: number;
+    max_txs: number;
+}
+
 /**
  * The interface of main config
  */
@@ -382,4 +428,6 @@ export interface IConfig {
     wallet: IWalletConfig;
 
     key_store: IKeyStoreConfig;
+
+    node: INodeConfig;
 }

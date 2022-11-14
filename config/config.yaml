@@ -22,6 +22,10 @@ wallet:
   manager_key: "key_store:manager"
   access_secret: ${ACCESS_SECRET}
 
+node:
+  interval: 600
+  max_txs: 256
+
 key_store:
   items:
     - name: manager

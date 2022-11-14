@@ -22,5 +22,8 @@ describe("Test of Config", () => {
         assert.strictEqual(config.key_store.items[0].name, "manager");
         assert.strictEqual(config.key_store.items[0].file, "test_manager.key");
         assert.strictEqual(config.key_store.items[0].key_store.valid, false);
+
+        assert.strictEqual(config.node.interval, 10);
+        assert.strictEqual(config.node.max_txs, 8);
     });
 });
