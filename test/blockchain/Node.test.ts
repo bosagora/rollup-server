@@ -18,8 +18,10 @@ import path from "path";
 
 class BlockExternalizer implements IBlockExternalizer {
     public block: Block | undefined;
-    public externalize(block: Block) {
+    public cid: string | undefined;
+    public externalize(block: Block, cid: string) {
         this.block = block;
+        this.cid = cid;
     }
 }
 
@@ -68,5 +70,7 @@ describe("Test of Node", function () {
         assert.ok(externalizer.block !== undefined);
         block.header.timestamp = externalizer.block.header.timestamp;
         assert.deepStrictEqual(block, externalizer.block);
+        assert.ok(externalizer.cid !== undefined);
+        console.log(externalizer.cid);
     });
 });
