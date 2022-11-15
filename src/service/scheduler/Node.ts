@@ -8,12 +8,12 @@
  *       MIT License. See LICENSE for details.
  */
 
-import { Block, Hash, Scheduler, Transaction, TransactionPool, Utils } from "../../modules/";
+import { Block, Hash, IPFSManager, Scheduler, Transaction, TransactionPool, Utils } from "../../modules/";
 import { Config } from "../common/Config";
 import { logger } from "../common/Logger";
 
 export interface IBlockExternalizer {
-    externalize(block: Block): void;
+    externalize(block: Block, cid: string): void;
 }
 
 export class Node extends Scheduler {
@@ -27,6 +27,8 @@ export class Node extends Scheduler {
 
     private old_time_stamp: number;
     private new_time_stamp: number;
+
+    private _ipfs: IPFSManager | undefined;
 
     constructor() {
         super(1);
@@ -51,6 +53,14 @@ export class Node extends Scheduler {
         }
     }
 
+    private get ipfs(): IPFSManager {
+        if (this._ipfs !== undefined) return this._ipfs;
+        else {
+            logger.error("IPFSManager is not ready yet.");
+            process.exit(1);
+        }
+    }
+
     /**
      * 실행에 필요한 여러 객체를 설정한다
      * @param options 옵션
@@ -59,6 +69,7 @@ export class Node extends Scheduler {
         if (options) {
             if (options.config && options.config instanceof Config) this._config = options.config;
         }
+        if (this._config !== undefined) this._ipfs = new IPFSManager(this._config.node.ipfs_api_url);
     }
 
     public setExternalizer(value: IBlockExternalizer) {
@@ -74,8 +85,6 @@ export class Node extends Scheduler {
         if (txs.length === 0) return undefined;
 
         const block = Block.createBlock(this.prev_hash, this.prev_height, txs);
-        this.prev_hash = block.header.prev_block;
-        this.prev_height = block.header.height;
 
         return block;
     }
@@ -93,7 +102,8 @@ export class Node extends Scheduler {
                 this.old_time_stamp = this.new_time_stamp;
                 const block = this.createBlock();
                 if (block !== undefined) {
-                    if (this.externalizer !== undefined) this.externalizer.externalize(block);
+                    const cid = await this.ipfs.add(JSON.stringify(block));
+                    if (this.externalizer !== undefined) this.externalizer.externalize(block, cid);
                 }
             }
         } catch (error) {
