@@ -9,3 +9,5 @@ export { Scheduler } from "./scheduler/Scheduler";
 export { WebService } from "./service/WebService";
 export { JSONValidator } from "./utils/JSONValidator";
 export { Utils, ArrayRange, iota } from "./utils/Utils";
+
+export { IPFSManager } from "./network/IPFSManager";
