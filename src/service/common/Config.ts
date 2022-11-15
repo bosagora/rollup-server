@@ -321,6 +321,8 @@ export class KeyStoreConfig implements IKeyStoreConfig {
 export class NodeConfig implements INodeConfig {
     public interval: number;
     public max_txs: number;
+    public ipfs_api_url: string;
+    public ipfs_gateway_url: string;
 
     /**
      * Constructor
@@ -330,6 +332,8 @@ export class NodeConfig implements INodeConfig {
 
         this.interval = defaults.interval;
         this.max_txs = defaults.max_txs;
+        this.ipfs_api_url = defaults.ipfs_api_url;
+        this.ipfs_gateway_url = defaults.ipfs_gateway_url;
     }
 
     /**
@@ -339,6 +343,8 @@ export class NodeConfig implements INodeConfig {
         return {
             interval: 600,
             max_txs: 128,
+            ipfs_api_url: "https://api-ipfs.bosagora.info",
+            ipfs_gateway_url: "https://ipfs.bosagora.info",
         };
     }
 
@@ -349,6 +355,8 @@ export class NodeConfig implements INodeConfig {
     public readFromObject(config: INodeConfig) {
         if (config.interval !== undefined) this.interval = config.interval;
         if (config.max_txs !== undefined) this.max_txs = config.max_txs;
+        if (config.ipfs_api_url !== undefined) this.ipfs_api_url = config.ipfs_api_url;
+        if (config.ipfs_gateway_url !== undefined) this.ipfs_gateway_url = config.ipfs_gateway_url;
     }
 }
 
@@ -409,6 +417,8 @@ export interface IKeyStoreConfig {
 export interface INodeConfig {
     interval: number;
     max_txs: number;
+    ipfs_api_url: string;
+    ipfs_gateway_url: string;
 }
 
 /**
