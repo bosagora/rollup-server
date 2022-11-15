@@ -25,3 +25,5 @@ wallet:
 node:
   interval: 600
   max_txs: 256
+  ipfs_api_url: https://api-ipfs.bosagora.info
+  ipfs_gateway_url: https://ipfs.bosagora.info
