@@ -26,7 +26,8 @@ describe("Test of Config", () => {
         assert.strictEqual(config.node.interval, 10);
         assert.strictEqual(config.node.max_txs, 8);
 
-        assert.strictEqual(config.node.ipfs_api_url, "https://api-ipfs.bosagora.info");
-        assert.strictEqual(config.node.ipfs_gateway_url, "https://ipfs.bosagora.info");
+        assert.strictEqual(config.node.ipfs_api_url, "http://localhost:5001");
+        assert.strictEqual(config.node.ipfs_gateway_url, "http://localhost:8080");
+        assert.strictEqual(config.node.ipfs_test, true);
     });
 });

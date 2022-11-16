@@ -25,5 +25,6 @@ wallet:
 node:
   interval: 5
   max_txs: 8
-  ipfs_api_url: https://api-ipfs.bosagora.info
-  ipfs_gateway_url: https://ipfs.bosagora.info
+  ipfs_api_url: http://localhost:5001
+  ipfs_gateway_url: http://localhost:8080
+  ipfs_test: true
