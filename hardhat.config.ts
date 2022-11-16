@@ -90,6 +90,11 @@ const config: HardhatUserConfig = {
             chainId: 2019,
             accounts: getAccounts(),
         },
+        production_net: {
+            url: process.env.PRODUCTION_NET_URL || "",
+            chainId: Number(process.env.PRODUCTION_CHAIN_ID || "2151"),
+            accounts: getAccounts(),
+        },
     },
     gasReporter: {
         enabled: process.env.REPORT_GAS !== undefined,
