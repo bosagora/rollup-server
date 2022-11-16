@@ -323,6 +323,7 @@ export class NodeConfig implements INodeConfig {
     public max_txs: number;
     public ipfs_api_url: string;
     public ipfs_gateway_url: string;
+    public ipfs_test: boolean;
 
     /**
      * Constructor
@@ -334,6 +335,7 @@ export class NodeConfig implements INodeConfig {
         this.max_txs = defaults.max_txs;
         this.ipfs_api_url = defaults.ipfs_api_url;
         this.ipfs_gateway_url = defaults.ipfs_gateway_url;
+        this.ipfs_test = defaults.ipfs_test;
     }
 
     /**
@@ -345,6 +347,7 @@ export class NodeConfig implements INodeConfig {
             max_txs: 128,
             ipfs_api_url: "https://api-ipfs.bosagora.info",
             ipfs_gateway_url: "https://ipfs.bosagora.info",
+            ipfs_test: true,
         };
     }
 
@@ -357,6 +360,7 @@ export class NodeConfig implements INodeConfig {
         if (config.max_txs !== undefined) this.max_txs = config.max_txs;
         if (config.ipfs_api_url !== undefined) this.ipfs_api_url = config.ipfs_api_url;
         if (config.ipfs_gateway_url !== undefined) this.ipfs_gateway_url = config.ipfs_gateway_url;
+        if (config.ipfs_test !== undefined) this.ipfs_test = config.ipfs_test;
     }
 }
 
@@ -419,6 +423,7 @@ export interface INodeConfig {
     max_txs: number;
     ipfs_api_url: string;
     ipfs_gateway_url: string;
+    ipfs_test: boolean;
 }
 
 /**

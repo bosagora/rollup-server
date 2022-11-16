@@ -12,10 +12,11 @@ import { IPFSManager } from "../../src/modules";
 
 import * as assert from "assert";
 
-describe("Test of Node", () => {
-    const ipfs = new IPFSManager("https://api-ipfs.bosagora.info");
+describe("Test of IPFSManager", () => {
+    const ipfs = new IPFSManager("http://localhost:5001");
+    ipfs.setTest(true);
 
-    it("Start Node", async () => {
+    it("Add Contents", async () => {
         const res = await ipfs.add("hello world!");
         assert.ok(res !== null);
     });

@@ -69,7 +69,10 @@ export class Node extends Scheduler {
         if (options) {
             if (options.config && options.config instanceof Config) this._config = options.config;
         }
-        if (this._config !== undefined) this._ipfs = new IPFSManager(this._config.node.ipfs_api_url);
+        if (this._config !== undefined) {
+            this._ipfs = new IPFSManager(this._config.node.ipfs_api_url);
+            this._ipfs.setTest(this._config.node.ipfs_test);
+        }
     }
 
     public setExternalizer(value: IBlockExternalizer) {
