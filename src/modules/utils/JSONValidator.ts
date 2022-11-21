@@ -78,13 +78,13 @@ export class JSONValidator {
                 title: "Transaction",
                 type: "object",
                 properties: {
-                    id: {
+                    trade_id: {
                         type: "string",
                     },
-                    sender: {
+                    user_id: {
                         type: "string",
                     },
-                    receiver: {
+                    state: {
                         type: "string",
                     },
                     amount: {
@@ -93,9 +93,15 @@ export class JSONValidator {
                     timestamp: {
                         type: "number",
                     },
+                    exchange_user_id: {
+                        type: "string",
+                    },
+                    exchange_id: {
+                        type: "string",
+                    },
                 },
                 additionalProperties: false,
-                required: ["id", "sender", "receiver", "amount", "timestamp"],
+                required: ["trade_id", "user_id", "state", "amount", "timestamp", "exchange_user_id", "exchange_id"],
             },
         ],
     ]);

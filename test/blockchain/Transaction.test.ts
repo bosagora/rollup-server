@@ -18,14 +18,16 @@ describe("Transaction", () => {
         const tx = new Transaction(
             "12345678",
             "0x064c9Fc53d5936792845ca58778a52317fCf47F2",
-            "0x67e4996358fEfa5c3A90b21fCf3B889C25759f3A",
+            "0",
             BigInt(123),
-            1668044556
+            1668044556,
+            "997DE626B2D417F0361D61C09EB907A57226DB5B",
+            "a5c19fed89739383"
         );
 
         assert.strictEqual(
             hashFull(tx).toString(),
-            "0x5f5595cc8156772204f62e1450d0256ca4b23639b9f1f3ac0e1b5daec52400e6"
+            "0x133f17377fc8dd6727afc80ac5428bac832deef8939c4c994c4bbc2806ed6715"
         );
     });
 
@@ -33,9 +35,11 @@ describe("Transaction", () => {
         const tx = new Transaction(
             "12345678",
             "0x064c9Fc53d5936792845ca58778a52317fCf47F2",
-            "0x67e4996358fEfa5c3A90b21fCf3B889C25759f3A",
+            "0",
             BigInt(123),
-            1668044556
+            1668044556,
+            "997DE626B2D417F0361D61C09EB907A57226DB5B",
+            "a5c19fed89739383"
         );
 
         const clone_tx = tx.clone();

@@ -51,11 +51,13 @@ describe("Test of Node", function () {
         for (let idx = 0; idx < 8; idx++) {
             txs.push(
                 new Transaction(
-                    "12345678",
+                    (12345670 + idx).toString(),
                     "0x064c9Fc53d5936792845ca58778a52317fCf47F2",
-                    "0x67e4996358fEfa5c3A90b21fCf3B889C25759f3A",
+                    "0",
                     BigInt(idx + 1),
-                    Utils.getTimeStamp()
+                    Utils.getTimeStamp(),
+                    "997DE626B2D417F0361D61C09EB907A57226DB5B",
+                    "a5c19fed89739383"
                 )
             );
             txs_hash.push(hashFull(txs[idx]));
