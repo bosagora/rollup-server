@@ -8,7 +8,7 @@
  *       MIT License. See LICENSE for details.
  */
 
-import { Block, Hash, IPFSManager, Scheduler, Transaction, TransactionPool, Utils } from "../../modules/";
+import { Block, Hash, hashFull, IPFSManager, Scheduler, Transaction, TransactionPool, Utils } from "../../modules/";
 import { Config } from "../common/Config";
 import { logger } from "../common/Logger";
 
@@ -83,15 +83,6 @@ export class Node extends Scheduler {
         this.pool.add(tx);
     }
 
-    public createBlock(): Block | undefined {
-        const txs = this.pool.extract(this.config.node.max_txs);
-        if (txs.length === 0) return undefined;
-
-        const block = Block.createBlock(this.prev_hash, this.prev_height, txs);
-
-        return block;
-    }
-
     /**
      * 실제 작업
      * @protected
@@ -103,10 +94,26 @@ export class Node extends Scheduler {
             const new_period = Math.floor(this.new_time_stamp / this.config.node.interval);
             if (old_period !== new_period) {
                 this.old_time_stamp = this.new_time_stamp;
-                const block = this.createBlock();
-                if (block !== undefined) {
-                    const cid = await this.ipfs.add(JSON.stringify(block));
-                    if (this.externalizer !== undefined) this.externalizer.externalize(block, cid);
+                const txs = this.pool.get(this.config.node.max_txs);
+
+                if (txs.length > 0) {
+                    const block = Block.createBlock(this.prev_hash, this.prev_height, txs);
+                    let cid: string = "";
+                    let success: boolean = true;
+                    try {
+                        // Save block to IPFS
+                        cid = await this.ipfs.add(JSON.stringify(block));
+                    } catch {
+                        success = false;
+                    }
+
+                    if (success) {
+                        this.prev_hash = hashFull(block.header);
+                        this.prev_height = block.header.height;
+                        this.pool.remove(txs);
+                        if (this.externalizer !== undefined) this.externalizer.externalize(block, cid);
+                        // TODO  Save Smart Contract
+                    }
                 }
             }
         } catch (error) {
