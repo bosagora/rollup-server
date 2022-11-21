@@ -283,7 +283,7 @@ export class KeyStoreConfig implements IKeyStoreConfig {
                 this.items.push({
                     name: elem.name,
                     file: elem.file,
-                    key_store: new KeyStore(elem.name, path.resolve("keystore" + elem.file)),
+                    key_store: new KeyStore(elem.name, path.resolve("keystore", elem.file)),
                 });
             }
         }
