@@ -48,7 +48,9 @@ describe("TransactionPool", () => {
         assert.strictEqual(tx_pool.length, txs.length);
 
         for (let idx = 0; idx < tx_pool.length; idx++) {
-            assert.deepStrictEqual(tx_pool.extract(1), [txs[idx]]);
+            const tx = tx_pool.get(1);
+            assert.deepStrictEqual(tx, [txs[idx]]);
+            tx_pool.remove(tx);
         }
     });
 });
