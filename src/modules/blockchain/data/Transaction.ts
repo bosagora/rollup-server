@@ -20,19 +20,19 @@ import { SmartBuffer } from "smart-buffer";
  */
 export class Transaction {
     /**
-     * ID of transaction
+     * ID of the trade
      */
-    public id: string;
+    public trade_id: string;
 
     /**
-     * The address of the sender
+     * The ID of User
      */
-    public sender: string;
+    public user_id: string;
 
     /**
-     * The address of the receiver
+     * The type of transaction
      */
-    public receiver: string;
+    public state: string;
 
     /**
      * The amount of sending
@@ -45,14 +45,34 @@ export class Transaction {
     public timestamp: number;
 
     /**
+     * The exchange user id
+     */
+    public exchange_user_id: string;
+
+    /**
+     * The exchange id
+     */
+    public exchange_id: string;
+
+    /**
      * Constructor
      */
-    constructor(id: string, sender: string, receiver: string, amount: bigint, timestamp: number) {
-        this.id = id;
-        this.sender = sender;
-        this.receiver = receiver;
+    constructor(
+        trade_id: string,
+        user_id: string,
+        state: string,
+        amount: bigint,
+        timestamp: number,
+        exchange_user_id: string,
+        exchange_id: string
+    ) {
+        this.trade_id = trade_id;
+        this.user_id = user_id;
+        this.state = state;
         this.amount = amount;
         this.timestamp = timestamp;
+        this.exchange_user_id = exchange_user_id;
+        this.exchange_id = exchange_id;
     }
 
     /**
@@ -70,7 +90,15 @@ export class Transaction {
 
         JSONValidator.isValidOtherwiseThrow("Transaction", value);
 
-        return new Transaction(value.id, value.sender, value.receiver, BigInt(value.amount), value.timestamp);
+        return new Transaction(
+            value.trade_id,
+            value.user_id,
+            value.state,
+            BigInt(value.amount),
+            value.timestamp,
+            value.exchange_user_id,
+            value.exchange_id
+        );
     }
 
     /**
@@ -78,11 +106,13 @@ export class Transaction {
      * @param buffer The buffer where collected data is stored
      */
     public computeHash(buffer: SmartBuffer) {
-        hashPart(this.id, buffer);
-        hashPart(this.sender, buffer);
-        hashPart(this.receiver, buffer);
+        hashPart(this.trade_id, buffer);
+        hashPart(this.user_id, buffer);
+        hashPart(this.state, buffer);
         hashPart(this.amount, buffer);
         hashPart(this.timestamp, buffer);
+        hashPart(this.exchange_user_id, buffer);
+        hashPart(this.exchange_id, buffer);
     }
 
     /**
@@ -90,11 +120,13 @@ export class Transaction {
      */
     public toJSON(): any {
         return {
-            id: this.id,
-            sender: this.sender,
-            receiver: this.receiver,
+            trade_id: this.trade_id,
+            user_id: this.user_id,
+            state: this.state,
             amount: this.amount.toString(),
             timestamp: this.timestamp,
+            exchange_user_id: this.exchange_user_id,
+            exchange_id: this.exchange_id,
         };
     }
 
@@ -102,6 +134,14 @@ export class Transaction {
      * Creates and returns a copy of this object.
      */
     public clone(): Transaction {
-        return new Transaction(this.id, this.sender, this.receiver, this.amount, this.timestamp);
+        return new Transaction(
+            this.trade_id,
+            this.user_id,
+            this.state,
+            this.amount,
+            this.timestamp,
+            this.exchange_user_id,
+            this.exchange_id
+        );
     }
 }
