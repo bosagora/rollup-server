@@ -19,7 +19,7 @@ logging:
   console: true
 
 wallet:
-  manager_key: "key_store:manager"
+  manager_key: "${MANAGER_KEY}"
   access_secret: ${ACCESS_SECRET}
 
 node:
@@ -28,8 +28,3 @@ node:
   ipfs_api_url: http://localhost:5001
   ipfs_gateway_url: http://localhost:8080
   ipfs_test: false
-
-key_store:
-  items:
-    - name: manager
-      file: test_manager.key
