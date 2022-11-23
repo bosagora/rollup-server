@@ -140,3 +140,6 @@ typechain
 cache
 artifacts
 
+#ipfs
+ipfs
+ipfs_staging
