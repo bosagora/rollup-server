@@ -1,5 +1,5 @@
 # From Agora Runner
-FROM node:14.15.4-alpine3.12
+FROM node:16.9.1-alpine
 RUN apk add --no-cache git py-pip alpine-sdk \
     bash autoconf libtool automake
 

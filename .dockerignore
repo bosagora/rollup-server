@@ -1,0 +1,13 @@
+.idea
+.git
+.gitignore
+.dockerignore
+Dockerfile
+node_modules/
+artifacts/
+cache/
+typechain/
+logs/
+docker-compose.yml
+ipfs/
+ipfs_staging/
