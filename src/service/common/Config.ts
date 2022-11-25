@@ -15,7 +15,6 @@ import ip from "ip";
 import path from "path";
 import { readYamlEnvSync } from "yaml-env-defaults";
 import { Utils } from "../../modules/utils/Utils";
-import { KeyStore } from "../keystore/KeyStore";
 
 /**
  * Main config
@@ -36,10 +35,6 @@ export class Config implements IConfig {
      */
     public scheduler: SchedulerConfig;
 
-    public wallet: WalletConfig;
-
-    public key_store: KeyStoreConfig;
-
     public node: NodeConfig;
 
     /**
@@ -48,8 +43,6 @@ export class Config implements IConfig {
     constructor() {
         this.server = new ServerConfig();
         this.logging = new LoggingConfig();
-        this.key_store = new KeyStoreConfig();
-        this.wallet = new WalletConfig();
         this.node = new NodeConfig();
         this.scheduler = new SchedulerConfig();
     }
@@ -96,15 +89,8 @@ export class Config implements IConfig {
         }) as IConfig;
         this.server.readFromObject(cfg.server);
         this.logging.readFromObject(cfg.logging);
-        this.wallet.readFromObject(cfg.wallet);
         this.node.readFromObject(cfg.node);
         this.scheduler.readFromObject(cfg.scheduler);
-        this.key_store.readFromObject(cfg.key_store);
-    }
-
-    public async decrypt() {
-        await this.key_store.decrypt();
-        this.wallet.manager_key = await this.key_store.getPrivateKey(this.wallet.manager_key);
     }
 }
 
@@ -226,47 +212,6 @@ export class SchedulerConfig implements ISchedulerConfig {
 /**
  * Logging config
  */
-export class WalletConfig implements IWalletConfig {
-    /**
-     * 계정의 비밀키 또는 키파일
-     */
-    public manager_key: string;
-
-    public access_secret: string;
-
-    /**
-     * Constructor
-     */
-    constructor() {
-        const defaults = WalletConfig.defaultValue();
-
-        this.manager_key = defaults.manager_key;
-        this.access_secret = defaults.access_secret;
-    }
-
-    /**
-     * Returns default value
-     */
-    public static defaultValue(): IWalletConfig {
-        return {
-            manager_key: process.env.MANAGER_KEY || "",
-            access_secret: process.env.ACCESS_SECRET || "",
-        };
-    }
-
-    /**
-     * Reads from Object
-     * @param config The object of ILoggingConfig
-     */
-    public readFromObject(config: IWalletConfig) {
-        if (config.manager_key !== undefined) this.manager_key = config.manager_key;
-        if (config.access_secret !== undefined) this.access_secret = config.access_secret;
-    }
-}
-
-/**
- * Logging config
- */
 export class LoggingConfig implements ILoggingConfig {
     /**
      * The path of logging files
@@ -312,69 +257,6 @@ export class LoggingConfig implements ILoggingConfig {
         if (config.folder) this.folder = path.resolve(Utils.getInitCWD(), config.folder);
         if (config.level) this.level = config.level;
         if (config.console !== undefined) this.console = config.console;
-    }
-}
-
-export class KeyStoreConfig implements IKeyStoreConfig {
-    public items: IKeyStoreItemConfig[];
-    /**
-     * Constructor
-     */
-    constructor() {
-        const defaults = KeyStoreConfig.defaultValue();
-        this.items = defaults.items;
-    }
-
-    /**
-     * Returns default value
-     */
-    public static defaultValue(): IKeyStoreConfig {
-        return {
-            items: [],
-        } as unknown as IKeyStoreConfig;
-    }
-
-    /**
-     * Reads from Object
-     * @param config The object of ILoggingConfig
-     */
-    public readFromObject(config: IKeyStoreConfig) {
-        this.items = [];
-        if (config === undefined) return;
-        if (config.items !== undefined) {
-            for (const elem of config.items) {
-                this.items.push({
-                    name: elem.name,
-                    file: elem.file,
-                    key_store: new KeyStore(elem.name, path.resolve("keystore", elem.file)),
-                });
-            }
-        }
-    }
-
-    public getItemByID(name: string): IKeyStoreItemConfig | undefined {
-        const find = name.toLowerCase();
-        return this.items.find((m) => m.name.toLowerCase() === find);
-    }
-
-    public async decrypt() {
-        for (const elem of this.items) {
-            await elem.key_store.getPrivateKey();
-        }
-    }
-
-    public async getPrivateKey(value: string) {
-        const values = value.split(":");
-        if (values.length >= 2 && values[0] === "key_store") {
-            const item = this.getItemByID(values[1]);
-            if (item !== undefined) {
-                return item.key_store.getPrivateKey();
-            } else {
-                return "";
-            }
-        } else {
-            return value;
-        }
     }
 }
 
@@ -462,25 +344,6 @@ export interface ILoggingConfig {
     console: boolean;
 }
 
-export interface IWalletConfig {
-    manager_key: string;
-    access_secret: string;
-}
-
-export interface IKeyStoreItemConfig {
-    name: string;
-    file: string;
-    key_store: KeyStore;
-}
-
-/**
- *  The keystore
- */
-export interface IKeyStoreConfig {
-    items: IKeyStoreItemConfig[];
-    getItemByID(name: string): IKeyStoreItemConfig | undefined;
-}
-
 export interface INodeConfig {
     interval: number;
     max_txs: number;
@@ -543,10 +406,6 @@ export interface IConfig {
      * Logging config
      */
     logging: ILoggingConfig;
-
-    wallet: IWalletConfig;
-
-    key_store: IKeyStoreConfig;
 
     node: INodeConfig;
 
