@@ -28,3 +28,11 @@ node:
   ipfs_api_url: http://ipfs:5001
   ipfs_gateway_url: http://ipfs:8080
   ipfs_test: true
+
+scheduler:
+  enable: true
+  items:
+    - name: node
+      enable: true
+      interval: 1
+

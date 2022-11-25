@@ -19,6 +19,13 @@ describe("Test of Config", () => {
             config.wallet.access_secret,
             "9812176e565a007a84c5d2fc4cf842b12eb26dbc7568b4e40fc4f2418f2c8f54"
         );
+
+        assert.strictEqual(config.scheduler.enable, true);
+        assert.strictEqual(config.scheduler.items.length, 1);
+        assert.strictEqual(config.scheduler.items[0].name, "node");
+        assert.strictEqual(config.scheduler.items[0].enable, true);
+        assert.strictEqual(config.scheduler.items[0].interval, 1);
+
         assert.strictEqual(config.key_store.items[0].name, "manager");
         assert.strictEqual(config.key_store.items[0].file, "test_manager.key");
         assert.strictEqual(config.key_store.items[0].key_store.valid, false);

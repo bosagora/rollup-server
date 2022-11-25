@@ -31,6 +31,11 @@ export class Config implements IConfig {
      */
     public logging: LoggingConfig;
 
+    /**
+     * Scheduler
+     */
+    public scheduler: SchedulerConfig;
+
     public wallet: WalletConfig;
 
     public key_store: KeyStoreConfig;
@@ -46,6 +51,7 @@ export class Config implements IConfig {
         this.key_store = new KeyStoreConfig();
         this.wallet = new WalletConfig();
         this.node = new NodeConfig();
+        this.scheduler = new SchedulerConfig();
     }
 
     /**
@@ -91,8 +97,9 @@ export class Config implements IConfig {
         this.server.readFromObject(cfg.server);
         this.logging.readFromObject(cfg.logging);
         this.wallet.readFromObject(cfg.wallet);
-        this.key_store.readFromObject(cfg.key_store);
         this.node.readFromObject(cfg.node);
+        this.scheduler.readFromObject(cfg.scheduler);
+        this.key_store.readFromObject(cfg.key_store);
     }
 
     public async decrypt() {
@@ -157,6 +164,62 @@ export class ServerConfig implements IServerConfig {
         }
         this.address = conf.address;
         this.port = conf.port;
+    }
+}
+
+/**
+ * Information on the scheduler.
+ */
+export class SchedulerConfig implements ISchedulerConfig {
+    /**
+     * Whether the scheduler is used or not
+     */
+    public enable: boolean;
+
+    /**
+     * Container for scheduler items
+     */
+    public items: ISchedulerItemConfig[];
+
+    /**
+     * Constructor
+     */
+    constructor() {
+        const defaults = SchedulerConfig.defaultValue();
+        this.enable = defaults.enable;
+        this.items = defaults.items;
+    }
+
+    /**
+     * Returns default value
+     */
+    public static defaultValue(): ISchedulerConfig {
+        return {
+            enable: false,
+            items: [
+                {
+                    name: "bridge",
+                    enable: false,
+                    interval: 1,
+                },
+            ],
+        } as unknown as ISchedulerConfig;
+    }
+
+    /**
+     * Reads from Object
+     * @param config The object of ILoggingConfig
+     */
+    public readFromObject(config: ISchedulerConfig) {
+        this.enable = false;
+        this.items = [];
+        if (config === undefined) return;
+        if (config.enable !== undefined) this.enable = config.enable;
+        if (config.items !== undefined) this.items = config.items;
+    }
+
+    public getScheduler(name: string): ISchedulerItemConfig | undefined {
+        return this.items.find((m) => m.name === name);
     }
 }
 
@@ -427,6 +490,47 @@ export interface INodeConfig {
 }
 
 /**
+ * The interface of Scheduler Item Config
+ */
+export interface ISchedulerItemConfig {
+    /**
+     * Name
+     */
+    name: string;
+
+    /**
+     * Whether it's used or not
+     */
+    enable: boolean;
+
+    /**
+     * Execution cycle (seconds)
+     */
+    interval: number;
+}
+
+/**
+ * The interface of Scheduler Config
+ */
+export interface ISchedulerConfig {
+    /**
+     * Whether the scheduler is used or not
+     */
+    enable: boolean;
+
+    /**
+     * Container for scheduler items
+     */
+    items: ISchedulerItemConfig[];
+
+    /**
+     * Find the scheduler item with your name
+     * @param name The name of the scheduler item
+     */
+    getScheduler(name: string): ISchedulerItemConfig | undefined;
+}
+
+/**
  * The interface of main config
  */
 export interface IConfig {
@@ -445,4 +549,9 @@ export interface IConfig {
     key_store: IKeyStoreConfig;
 
     node: INodeConfig;
+
+    /**
+     * Scheduler
+     */
+    scheduler: ISchedulerConfig;
 }

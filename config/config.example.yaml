@@ -28,3 +28,11 @@ node:
   ipfs_api_url: https://api-ipfs.bosagora.info
   ipfs_gateway_url: https://ipfs.bosagora.info
   ipfs_test: false
+
+scheduler:
+  enable: true
+  items:
+    - name: node
+      enable: true
+      interval: 1
+
