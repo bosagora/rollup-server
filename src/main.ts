@@ -11,10 +11,10 @@
 import { IScheduler } from "./modules/scheduler/Scheduler";
 import { Config } from "./service/common/Config";
 import { logger, Logger } from "./service/common/Logger";
+import { RollupServer } from "./service/RollupServer";
 import { Node } from "./service/scheduler/Node";
-import { WalletServer } from "./service/WalletServer";
 
-let server: WalletServer;
+let server: RollupServer;
 
 async function main() {
     // Create with the arguments and read from file
@@ -54,7 +54,7 @@ async function main() {
         }
     }
 
-    server = new WalletServer(config, schedulers);
+    server = new RollupServer(config, schedulers);
     return server.start().catch((error: any) => {
         // handle specific listen errors with friendly messages
         switch (error.code) {
