@@ -8,8 +8,10 @@
  *       MIT License. See LICENSE for details.
  */
 
+import { IScheduler } from "./modules/scheduler/Scheduler";
 import { Config } from "./service/common/Config";
 import { logger, Logger } from "./service/common/Logger";
+import { Node } from "./service/scheduler/Node";
 import { WalletServer } from "./service/WalletServer";
 
 let server: WalletServer;
@@ -44,7 +46,15 @@ async function main() {
     logger.info(`address: ${config.server.address}`);
     logger.info(`port: ${config.server.port}`);
 
-    server = new WalletServer(config);
+    const schedulers: IScheduler[] = [];
+    if (config.scheduler.enable) {
+        const scheduler = config.scheduler.getScheduler("node");
+        if (scheduler && scheduler.enable) {
+            schedulers.push(new Node());
+        }
+    }
+
+    server = new WalletServer(config, schedulers);
     return server.start().catch((error: any) => {
         // handle specific listen errors with friendly messages
         switch (error.code) {
