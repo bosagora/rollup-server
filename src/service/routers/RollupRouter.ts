@@ -26,7 +26,7 @@ import path from "path";
 // tslint:disable-next-line:no-var-requires
 const { body, param, query, validationResult } = require("express-validator");
 
-export class WalletRouter {
+export class RollupRouter {
     /**
      *
      * @private
@@ -84,7 +84,7 @@ export class WalletRouter {
     }
 
     public registerRoutes() {
-        this.app.get("/", [], WalletRouter.getHealthStatus.bind(this));
+        this.app.get("/", [], RollupRouter.getHealthStatus.bind(this));
         this.app.get(
             "/wallet/boa/balance/:address",
             [param("address").exists().isEthereumAddress()],
@@ -146,7 +146,7 @@ export class WalletRouter {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.json(
-                WalletRouter.makeResponseData(400, undefined, {
+                RollupRouter.makeResponseData(400, undefined, {
                     validation: errors.array(),
                     message: "Failed to check the validity of parameters.",
                 })
@@ -157,14 +157,14 @@ export class WalletRouter {
             const balance = await hre.ethers.provider.getBalance(address);
 
             return res.json(
-                WalletRouter.makeResponseData(200, {
+                RollupRouter.makeResponseData(200, {
                     address,
                     balance: balance.toString(),
                 })
             );
         } catch (e) {
             return res.json(
-                WalletRouter.makeResponseData(500, undefined, {
+                RollupRouter.makeResponseData(500, undefined, {
                     message: "Failed to get balance.",
                 })
             );
@@ -181,7 +181,7 @@ export class WalletRouter {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.json(
-                WalletRouter.makeResponseData(400, undefined, {
+                RollupRouter.makeResponseData(400, undefined, {
                     validation: errors.array(),
                     message: "Failed to check the validity of parameters.",
                 })
@@ -191,7 +191,7 @@ export class WalletRouter {
         const secret: string = String(req.body.access_secret);
         if (secret !== this._config.wallet.access_secret) {
             return res.json(
-                WalletRouter.makeResponseData(400, undefined, {
+                RollupRouter.makeResponseData(400, undefined, {
                     message: "The secret entered is not valid.",
                 })
             );
@@ -204,11 +204,11 @@ export class WalletRouter {
                 to: address,
                 value: BigNumber.from(value),
             });
-            return res.json(WalletRouter.makeResponseData(200, { hash: result }));
+            return res.json(RollupRouter.makeResponseData(200, { hash: result }));
         } catch (error) {
             await this.resetTransactionCount();
             return res.json(
-                WalletRouter.makeResponseData(500, undefined, {
+                RollupRouter.makeResponseData(500, undefined, {
                     message: "Failed to transfer BOA.",
                 })
             );
@@ -226,7 +226,7 @@ export class WalletRouter {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.json(
-                WalletRouter.makeResponseData(400, undefined, {
+                RollupRouter.makeResponseData(400, undefined, {
                     validation: errors.array(),
                     message: "Failed to check the validity of parameters.",
                 })
@@ -241,7 +241,7 @@ export class WalletRouter {
             const balance = await contract.balanceOf(address);
 
             return res.json(
-                WalletRouter.makeResponseData(200, {
+                RollupRouter.makeResponseData(200, {
                     token,
                     address,
                     balance: balance.toString(),
@@ -249,7 +249,7 @@ export class WalletRouter {
             );
         } catch (e) {
             return res.json(
-                WalletRouter.makeResponseData(500, undefined, {
+                RollupRouter.makeResponseData(500, undefined, {
                     message: "Failed to get balance of token.",
                 })
             );
@@ -267,7 +267,7 @@ export class WalletRouter {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.json(
-                WalletRouter.makeResponseData(400, undefined, {
+                RollupRouter.makeResponseData(400, undefined, {
                     validation: errors.array(),
                     message: "Failed to check the validity of parameters.",
                 })
@@ -277,7 +277,7 @@ export class WalletRouter {
         const secret: string = String(req.body.access_secret);
         if (secret !== this._config.wallet.access_secret) {
             return res.json(
-                WalletRouter.makeResponseData(400, undefined, {
+                RollupRouter.makeResponseData(400, undefined, {
                     message: "The secret entered is not valid.",
                 })
             );
@@ -289,11 +289,11 @@ export class WalletRouter {
             const value: string = String(req.body.value);
             const contract = new hre.ethers.Contract(token, this.ERC20_ABI, hre.ethers.provider) as ERC20;
             const result = await contract.connect(this.manager_signer).transfer(address, BigNumber.from(value));
-            return res.json(WalletRouter.makeResponseData(200, { hash: result }));
+            return res.json(RollupRouter.makeResponseData(200, { hash: result }));
         } catch (e) {
             await this.resetTransactionCount();
             return res.json(
-                WalletRouter.makeResponseData(500, undefined, {
+                RollupRouter.makeResponseData(500, undefined, {
                     message: "Failed to transfer token.",
                 })
             );
@@ -310,7 +310,7 @@ export class WalletRouter {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.json(
-                WalletRouter.makeResponseData(400, undefined, {
+                RollupRouter.makeResponseData(400, undefined, {
                     validation: errors.array(),
                     message: "Failed to check the validity of parameters.",
                 })
@@ -320,7 +320,7 @@ export class WalletRouter {
         const secret: string = String(req.body.access_secret);
         if (secret !== this._config.wallet.access_secret) {
             return res.json(
-                WalletRouter.makeResponseData(400, undefined, {
+                RollupRouter.makeResponseData(400, undefined, {
                     message: "The secret entered is not valid.",
                 })
             );
@@ -335,7 +335,7 @@ export class WalletRouter {
             const allowance = await contract.allowance(owner, spender);
 
             return res.json(
-                WalletRouter.makeResponseData(200, {
+                RollupRouter.makeResponseData(200, {
                     token,
                     owner,
                     spender,
@@ -344,7 +344,7 @@ export class WalletRouter {
             );
         } catch (e) {
             return res.json(
-                WalletRouter.makeResponseData(500, undefined, {
+                RollupRouter.makeResponseData(500, undefined, {
                     message: "Failed to get balance of token.",
                 })
             );
@@ -361,7 +361,7 @@ export class WalletRouter {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.json(
-                WalletRouter.makeResponseData(400, undefined, {
+                RollupRouter.makeResponseData(400, undefined, {
                     validation: errors.array(),
                     message: "Failed to check the validity of parameters.",
                 })
@@ -371,7 +371,7 @@ export class WalletRouter {
         const secret: string = String(req.body.access_secret);
         if (secret !== this._config.wallet.access_secret) {
             return res.json(
-                WalletRouter.makeResponseData(400, undefined, {
+                RollupRouter.makeResponseData(400, undefined, {
                     message: "The secret entered is not valid.",
                 })
             );
@@ -387,7 +387,7 @@ export class WalletRouter {
             const result = await contract.connect(this.manager_signer).approve(spender, BigNumber.from(value));
 
             return res.json(
-                WalletRouter.makeResponseData(200, {
+                RollupRouter.makeResponseData(200, {
                     token,
                     owner,
                     spender,
@@ -397,7 +397,7 @@ export class WalletRouter {
             );
         } catch (e) {
             return res.json(
-                WalletRouter.makeResponseData(500, undefined, {
+                RollupRouter.makeResponseData(500, undefined, {
                     message: "Failed to get balance of token.",
                 })
             );

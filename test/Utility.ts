@@ -1,8 +1,8 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 import { handleNetworkError } from "../src/modules/network/ErrorTypes";
-import { WalletServer } from "../src/service/WalletServer";
+import { RollupServer } from "../src/service/RollupServer";
 
-export class TestWalletServer extends WalletServer {}
+export class TestRollupServer extends RollupServer {}
 
 /**
  * This is a client for testing.

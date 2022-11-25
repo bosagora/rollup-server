@@ -1,6 +1,6 @@
 import { Config } from "../../src/service/common/Config";
 import { GasPriceManager } from "../../src/service/contract/GasPriceManager";
-import { TestClient, TestWalletServer } from "../Utility";
+import { TestClient, TestRollupServer } from "../Utility";
 
 import chai from "chai";
 import { solidity } from "ethereum-waffle";
@@ -24,7 +24,7 @@ chai.use(solidity);
 describe("Test of Server", function () {
     this.timeout(1000 * 60 * 5);
     const client = new TestClient();
-    let wallet_server: TestWalletServer;
+    let wallet_server: TestRollupServer;
     let serverURL: URL;
     const config = new Config();
     const manager = new hre.ethers.Wallet(process.env.MANAGER_KEY || "");
@@ -39,7 +39,7 @@ describe("Test of Server", function () {
     before("Create TestServer", async () => {
         config.readFromFile(path.resolve(process.cwd(), "config", "config_test.yaml"));
         serverURL = new URL(`http://127.0.0.1:${config.server.port}`);
-        wallet_server = new TestWalletServer(config);
+        wallet_server = new TestRollupServer(config);
     });
 
     before("Start TestServer", async () => {

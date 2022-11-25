@@ -14,9 +14,9 @@ import { IScheduler } from "../modules/scheduler/Scheduler";
 import { WebService } from "../modules/service/WebService";
 import { Config } from "./common/Config";
 import { cors_options } from "./option/cors";
-import { WalletRouter } from "./routers/WalletRouter";
+import { RollupRouter } from "./routers/RollupRouter";
 
-export class WalletServer extends WebService {
+export class RollupServer extends WebService {
     /**
      * The collection of schedulers
      * @protected
@@ -29,7 +29,7 @@ export class WalletServer extends WebService {
      */
     private readonly config: Config;
 
-    public readonly wallet_router: WalletRouter;
+    public readonly wallet_router: RollupRouter;
 
     /**
      * Constructor
@@ -40,7 +40,7 @@ export class WalletServer extends WebService {
         super(config.server.port, config.server.address);
 
         this.config = config;
-        this.wallet_router = new WalletRouter(this, this.config);
+        this.wallet_router = new RollupRouter(this, this.config);
 
         if (schedules) {
             schedules.forEach((m) => this.schedules.push(m));
