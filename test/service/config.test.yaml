@@ -21,4 +21,4 @@ scheduler:
           interval: 1
 
 database:
-    path: ${DB_PATH}
+    path: ":memory:"
