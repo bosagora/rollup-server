@@ -143,3 +143,6 @@ artifacts
 #ipfs
 ipfs
 ipfs_staging
+
+
+/db/*.db
