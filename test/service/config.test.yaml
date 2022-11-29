@@ -19,3 +19,6 @@ scheduler:
         - name: node
           enable: true
           interval: 1
+
+database:
+    path: ${DB_PATH}

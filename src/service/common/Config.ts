@@ -38,6 +38,11 @@ export class Config implements IConfig {
     public node: NodeConfig;
 
     /**
+     * Database
+     */
+    public database: DatabaseConfig;
+
+    /**
      * Constructor
      */
     constructor() {
@@ -45,6 +50,7 @@ export class Config implements IConfig {
         this.logging = new LoggingConfig();
         this.node = new NodeConfig();
         this.scheduler = new SchedulerConfig();
+        this.database = new DatabaseConfig();
     }
 
     /**
@@ -91,6 +97,7 @@ export class Config implements IConfig {
         this.logging.readFromObject(cfg.logging);
         this.node.readFromObject(cfg.node);
         this.scheduler.readFromObject(cfg.scheduler);
+        this.database.readFromObject(cfg.database);
     }
 }
 
@@ -413,4 +420,35 @@ export interface IConfig {
      * Scheduler
      */
     scheduler: ISchedulerConfig;
+
+    /**
+     * Database
+     */
+    database: IDatabaseConfig;
+}
+
+export interface IDatabaseConfig {
+    path: string;
+}
+export class DatabaseConfig implements IDatabaseConfig {
+    public path: string;
+
+    /**
+     * Constructor
+     */
+    constructor() {
+        const defaults = DatabaseConfig.defaultValue();
+        this.path = defaults.path;
+    }
+    public readFromObject(config: IDatabaseConfig) {
+        if (config.path !== undefined) this.path = config.path;
+    }
+    /**
+     * Returns default value
+     */
+    public static defaultValue(): IDatabaseConfig {
+        return {
+            path: "./db/rollup.db",
+        } as unknown as IDatabaseConfig;
+    }
 }

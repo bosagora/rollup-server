@@ -24,5 +24,7 @@ describe("Test of Config", () => {
         assert.strictEqual(config.node.ipfs_api_url, "http://localhost:5001");
         assert.strictEqual(config.node.ipfs_gateway_url, "http://localhost:8080");
         assert.strictEqual(config.node.ipfs_test, true);
+
+        assert.strictEqual(config.database.path, "db/rollup.db");
     });
 });
