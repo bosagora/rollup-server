@@ -12,13 +12,14 @@ import { JSONValidator } from "../../utils/JSONValidator";
 import { hashPart } from "../common/Hash";
 
 import { SmartBuffer } from "smart-buffer";
+import { ITransaction } from "../../../service/types";
 
 /**
  * The class that defines the transaction of a block.
  * Convert JSON object to TypeScript's instance.
  * An exception occurs if the required property is not present.
  */
-export class Transaction {
+export class Transaction implements ITransaction {
     /**
      * ID of the trade
      */

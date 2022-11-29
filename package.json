@@ -19,7 +19,8 @@
         "prettier": "node_modules/.bin/prettier --write --config .prettierrc 'contracts/**/*.sol' 'test/**/*.ts'",
         "debug:Endpoints": "NODE_ENV=test node_modules/.bin/hardhat test test/service/Endpoints.test.ts",
         "debug:Config": "NODE_ENV=test node_modules/.bin/hardhat test test/service/Config.test.ts",
-        "debug:BOA": "NODE_ENV=test node_modules/.bin/hardhat test test/service/BOA.test.ts"
+        "debug:BOA": "NODE_ENV=test node_modules/.bin/hardhat test test/service/BOA.test.ts",
+        "debug:Storage": "NODE_ENV=test node_modules/.bin/hardhat test test/service/Storage.test.ts"
     },
     "repository": {
         "type": "git",
