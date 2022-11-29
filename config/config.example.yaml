@@ -32,3 +32,5 @@ scheduler:
       enable: true
       interval: 1
 
+database:
+  path: ${DB_PATH}
