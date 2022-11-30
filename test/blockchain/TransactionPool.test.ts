@@ -8,7 +8,9 @@
  *       MIT License. See LICENSE for details.
  */
 
-import { Transaction, TransactionPool } from "../../src/modules";
+import { Transaction } from "rollup-pm-sdk";
+
+import { TransactionPool } from "../../src/service/scheduler/TransactionPool";
 
 import * as assert from "assert";
 
@@ -39,7 +41,8 @@ describe("TransactionPool", () => {
     // The test codes below compare with the values calculated in Agora.
     it("Test for transactionPool", () => {
         const txs = addresses.map(
-            (m) => new Transaction("12345678", "0x064c9Fc53d5936792845ca58778a52317fCf47F2", m, 10000n, 1668000000)
+            (m) =>
+                new Transaction("12345678", "0x064c9Fc53d5936792845ca58778a52317fCf47F2", m, 10000n, 1668000000, "", "")
         );
 
         const tx_pool = new TransactionPool();

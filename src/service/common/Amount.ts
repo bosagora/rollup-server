@@ -9,7 +9,7 @@
  *       MIT License. See LICENSE for details.
  */
 
-import { iota } from "../../modules/utils/Utils";
+import { iota } from "rollup-pm-sdk";
 
 import { BigNumber } from "ethers";
 

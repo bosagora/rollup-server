@@ -9,12 +9,12 @@
  */
 
 import { ArgumentParser } from "argparse";
+import { Utils } from "rollup-pm-sdk";
 import extend from "extend";
 import fs from "fs";
 import ip from "ip";
 import path from "path";
 import { readYamlEnvSync } from "yaml-env-defaults";
-import { Utils } from "../../modules/utils/Utils";
 
 /**
  * Main config
