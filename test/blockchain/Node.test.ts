@@ -8,7 +8,7 @@
  *       MIT License. See LICENSE for details.
  */
 
-import { Block, Hash, hashFull, Transaction, Utils } from "../../src/modules";
+import { Block, Hash, hashFull, Transaction, Utils } from "rollup-pm-sdk";
 import { Config } from "../../src/service/common/Config";
 import { IBlockExternalizer, Node } from "../../src/service/scheduler/Node";
 import { delay } from "../Utility";

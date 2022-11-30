@@ -10,7 +10,8 @@ export const createTableQuery = `
     amount TEXT,
     "timestamp" INTEGER,
     exchange_user_id TEXT,
-    exchange_id TEXT
+    exchange_id TEXT,
+    signature TEXT
   )
 `;
 
@@ -22,8 +23,9 @@ export const insertQuery = `
     amount,
     "timestamp",
     exchange_user_id,
-    exchange_id
-    ) VALUES (?,?,?,?,?,?,?)
+    exchange_id,
+    signature
+    ) VALUES (?,?,?,?,?,?,?,?)
 `;
 
 export const deleteQuery = `

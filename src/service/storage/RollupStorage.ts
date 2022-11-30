@@ -1,7 +1,8 @@
 import { Storage } from "../../modules/storage/Storage";
 import { IDatabaseConfig } from "../common/Config";
 import { createTableQuery, deleteQuery, dropQuery, insertQuery, selectQuery } from "./schema/RollupSchema";
-import { ITransaction } from "../types";
+
+import { ITransaction } from "rollup-pm-sdk";
 
 export class RollupStorage extends Storage {
     constructor(databaseConfig: IDatabaseConfig, callback: (err: Error | null) => void) {
@@ -30,6 +31,7 @@ export class RollupStorage extends Storage {
                     row.timestamp,
                     row.exchange_user_id,
                     row.exchange_id,
+                    row.signature,
                 ]);
             });
             statement.finalize((err) => {

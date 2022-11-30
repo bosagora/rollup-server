@@ -8,9 +8,12 @@
  *       MIT License. See LICENSE for details.
  */
 
-import { Block, Hash, hashFull, IPFSManager, Scheduler, Transaction, TransactionPool, Utils } from "../../modules/";
+import { IPFSManager, Scheduler } from "../../modules";
 import { Config } from "../common/Config";
 import { logger } from "../common/Logger";
+import { TransactionPool } from "./TransactionPool";
+
+import { Block, Hash, hashFull, Transaction, Utils } from "rollup-pm-sdk";
 
 export interface IBlockExternalizer {
     externalize(block: Block, cid: string): void;

@@ -1,8 +1,9 @@
 import * as assert from "assert";
 import path from "path";
-import { Transaction } from "../../src/modules";
 import { Config } from "../../src/service/common/Config";
 import { RollupStorage } from "../../src/service/storage/RollupStorage";
+
+import { Transaction } from "rollup-pm-sdk";
 
 describe("Test of Storage", () => {
     let storage: RollupStorage;

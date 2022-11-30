@@ -8,8 +8,7 @@
  *       MIT License. See LICENSE for details.
  */
 
-import { hashFull } from "../common/Hash";
-import { Transaction } from "../data/Transaction";
+import { hashFull, Transaction } from "rollup-pm-sdk";
 
 export class TransactionPool {
     private tx_map: Map<string, Transaction>;
