@@ -133,9 +133,6 @@ dist
 # WebStorm
 .idea
 
-
-typechain
-
 #Hardhat files
 cache
 artifacts
@@ -146,3 +143,4 @@ ipfs_staging
 
 
 /db/*.db
+/typechain-types/
