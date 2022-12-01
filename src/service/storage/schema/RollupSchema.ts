@@ -2,9 +2,10 @@ export const dropQuery = `
     DROP TABLE IF EXISTS tx
 `;
 
-export const createTableQuery = `
+export const createTxTableQuery = `
   CREATE TABLE IF NOT EXISTS tx(
-    trade_id TEXT PRIMARY KEY,
+    tx_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    trade_id TEXT,
     user_id TEXT,
     "state" TEXT,
     amount TEXT,
@@ -12,8 +13,10 @@ export const createTableQuery = `
     exchange_user_id TEXT,
     exchange_id TEXT,
     signer TEXT,
-    signature TEXT
-  )
+    signature TEXT,
+    hash TEXT
+  );
+  CREATE INDEX txHashIndex on tx (hash);
 `;
 
 export const insertQuery = `
@@ -26,14 +29,27 @@ export const insertQuery = `
     exchange_user_id,
     exchange_id,
     signer,
-    signature
-    ) VALUES (?,?,?,?,?,?,?,?,?)
+    signature,
+    hash
+    ) VALUES (?,?,?,?,?,?,?,?,?,?)
 `;
 
-export const deleteQuery = `
-    DELETE FROM tx WHERE trade_id = ?
+export const deleteByHashQuery = `
+    DELETE FROM tx WHERE hash = ?
 `;
 
-export const selectQuery = `
-    SELECT * FROM tx WHERE trade_id = ?
+export const selectQueryByID = `
+    SELECT * FROM tx WHERE tx_id = ?
+`;
+
+export const selectByHashQuery = `
+    SELECT * FROM tx WHERE hash = ?
+`;
+
+export const selectByLengthQuery = `
+    SELECT * FROM tx ORDER BY tx_id ASC LIMIT ?
+`;
+
+export const selectLength = `
+    SELECT COUNT(tx_id) as count FROM tx
 `;

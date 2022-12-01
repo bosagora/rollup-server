@@ -8,6 +8,8 @@
  *       MIT License. See LICENSE for details.
  */
 
+import * as ethers from "ethers";
+
 import { Block, Hash, hashFull, Transaction, Utils } from "rollup-pm-sdk";
 import { Config } from "../../src/service/common/Config";
 import { IBlockExternalizer, Node } from "../../src/service/scheduler/Node";
@@ -15,6 +17,7 @@ import { delay } from "../Utility";
 
 import * as assert from "assert";
 import path from "path";
+import { RollupStorage } from "../../src/service/storage/RollupStorage";
 
 class BlockExternalizer implements IBlockExternalizer {
     public block: Block | undefined;
@@ -31,11 +34,21 @@ describe("Test of Node", function () {
     let node: Node;
     let externalizer: BlockExternalizer;
     const config = new Config();
+    let storage: RollupStorage;
+    const signer = new ethers.Wallet("0xf6dda8e03f9dce37c081e5d178c1fda2ebdb90b5b099de1a555a658270d8c47d");
 
-    before("Create Node", () => {
+    before("Create Node", async () => {
         config.readFromFile(path.resolve(process.cwd(), "config/config_test.yaml"));
+        storage = await (() => {
+            return new Promise<RollupStorage>((resolve, reject) => {
+                const res = new RollupStorage(config.database, (err) => {
+                    if (err !== null) reject(err);
+                    else resolve(res);
+                });
+            });
+        })();
         node = new Node();
-        node.setOption({ config });
+        node.setOption({ config, storage });
         externalizer = new BlockExternalizer();
         node.setExternalizer(externalizer);
     });
@@ -47,7 +60,6 @@ describe("Test of Node", function () {
 
     it("Send transactions", async () => {
         const txs = [];
-        const txs_hash = [];
         for (let idx = 0; idx < 8; idx++) {
             txs.push(
                 new Transaction(
@@ -60,12 +72,13 @@ describe("Test of Node", function () {
                     "a5c19fed89739383"
                 )
             );
-            txs_hash.push(hashFull(txs[idx]));
         }
+        for (const tx of txs) await tx.sign(signer);
+
         const prev_hash = Hash.Null;
         const prev_height = 0n;
         const block = Block.createBlock(prev_hash, prev_height, txs);
-        txs.forEach((m) => node.receive(m));
+        for (const tx of txs) await node.receive(tx);
 
         await delay(6000);
 

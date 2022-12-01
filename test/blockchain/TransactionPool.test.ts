@@ -8,11 +8,12 @@
  *       MIT License. See LICENSE for details.
  */
 
-import { Transaction } from "rollup-pm-sdk";
-
-import { TransactionPool } from "../../src/service/scheduler/TransactionPool";
-
 import * as assert from "assert";
+import path from "path";
+import { Transaction, Utils } from "rollup-pm-sdk";
+import { Config } from "../../src/service/common/Config";
+import { TransactionPool } from "../../src/service/scheduler/TransactionPool";
+import { DBTransaction, RollupStorage } from "../../src/service/storage/RollupStorage";
 
 describe("TransactionPool", () => {
     const addresses = [
@@ -38,22 +39,68 @@ describe("TransactionPool", () => {
         "0x705ddF3da7143635143604Ef93d7624cA91905A5",
     ];
 
+    let tx_pool: TransactionPool;
+    let txs: DBTransaction[];
+
+    it("Create TransactionPool", async () => {
+        tx_pool = new TransactionPool();
+        const config: Config = new Config();
+        config.readFromFile(path.resolve("test", "service", "config.test.yaml"));
+
+        const storage = await (() => {
+            return new Promise<RollupStorage>((resolve, reject) => {
+                const res = new RollupStorage(config.database, (err) => {
+                    if (err !== null) reject(err);
+                    else resolve(res);
+                });
+            });
+        })();
+        tx_pool.storage = storage;
+    });
+
     // The test codes below compare with the values calculated in Agora.
-    it("Test for transactionPool", () => {
-        const txs = addresses.map(
-            (m) =>
-                new Transaction("12345678", "0x064c9Fc53d5936792845ca58778a52317fCf47F2", m, 10000n, 1668000000, "", "")
+    it("Insert test for transactionPool", async () => {
+        txs = addresses.map((m, index) =>
+            DBTransaction.make(
+                new Transaction(
+                    "transaction_" + index,
+                    "0x064c9Fc53d5936792845ca58778a52317fCf47F2",
+                    m,
+                    10000n,
+                    Utils.getTimeStamp(),
+                    "",
+                    ""
+                )
+            )
         );
 
-        const tx_pool = new TransactionPool();
-        txs.forEach((m) => tx_pool.add(m));
+        await tx_pool.add(txs);
+    });
 
-        assert.strictEqual(tx_pool.length, txs.length);
+    it("Check insert data count", async () => {
+        const length = await tx_pool.length();
+        assert.strictEqual(length, txs.length);
+    });
 
-        for (let idx = 0; idx < tx_pool.length; idx++) {
-            const tx = tx_pool.get(1);
-            assert.deepStrictEqual(tx, [txs[idx]]);
-            tx_pool.remove(tx);
+    it("Remove Test", async () => {
+        const length = await tx_pool.length();
+        assert.strictEqual(length, txs.length);
+
+        for (let idx = 0; idx < length; idx++) {
+            const tx: DBTransaction[] = await tx_pool.get(1);
+
+            assert.strictEqual(tx[0].trade_id, txs[idx].trade_id);
+            assert.strictEqual(tx[0].user_id, txs[idx].user_id);
+            assert.strictEqual(tx[0].state, txs[idx].state);
+            assert.strictEqual(tx[0].amount, txs[idx].amount.toString());
+            assert.strictEqual(tx[0].timestamp, txs[idx].timestamp);
+            assert.strictEqual(tx[0].exchange_user_id, txs[idx].exchange_user_id);
+            assert.strictEqual(tx[0].exchange_id, txs[idx].exchange_id);
+            assert.strictEqual(tx[0].signer, txs[idx].signer);
+            assert.strictEqual(tx[0].signature, txs[idx].signature);
+
+            await tx_pool.remove(tx[0]);
         }
+        assert.strictEqual(await tx_pool.length(), 0);
     });
 });

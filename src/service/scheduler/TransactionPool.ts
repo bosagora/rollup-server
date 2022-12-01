@@ -8,50 +8,65 @@
  *       MIT License. See LICENSE for details.
  */
 
-import { hashFull, Transaction } from "rollup-pm-sdk";
+import { DBTransaction, RollupStorage } from "../storage/RollupStorage";
 
 export class TransactionPool {
-    private tx_map: Map<string, Transaction>;
-    private readonly hash_array: string[];
+    private _storage: RollupStorage | undefined;
 
-    constructor() {
-        this.tx_map = new Map<string, Transaction>();
-        this.hash_array = [];
+    get storage(): RollupStorage {
+        return this._storage as RollupStorage;
+    }
+    set storage(storage) {
+        this._storage = storage;
     }
 
-    public add(tx: Transaction) {
-        const hash = hashFull(tx).toString();
-        if (!this.tx_map.has(hash)) {
-            this.hash_array.push(hash);
-            this.tx_map.set(hash, tx);
-        }
-    }
-
-    public get(length: number): Transaction[] {
-        let result: Transaction[];
-        if (length <= 0) return [];
-
-        result = [];
-        for (let idx = 0; idx < length && idx < this.hash_array.length; idx++) {
-            const hash = this.hash_array[idx];
-            const tx = this.tx_map.get(hash);
-            if (tx !== undefined) result.push(tx.clone());
-        }
-        return result;
-    }
-
-    public remove(txs: Transaction[]) {
-        for (const tx of txs) {
-            const hash = hashFull(tx).toString();
-            if (this.tx_map.has(hash)) {
-                this.tx_map.delete(hash);
-                const found_idx = this.hash_array.findIndex((m) => m === hash);
-                if (found_idx >= 0) this.hash_array.splice(found_idx, 1);
+    /**
+     * Insert transactions in the storage.
+     * @param tx transaction to be added
+     */
+    public async add(tx: DBTransaction | DBTransaction[]) {
+        try {
+            if (Array.isArray(tx)) {
+                await this.storage.insert(tx);
+            } else {
+                await this.storage.insert([tx]);
             }
+        } catch (e) {
+            throw new Error("TransactionPool::added error:" + e);
         }
     }
 
-    public get length(): number {
-        return this.hash_array.length;
+    /**
+     * Query the transactions in the storage in the order in which they are entered.
+     * @param length Number of transactions desired
+     */
+    public async get(length: number): Promise<DBTransaction[]> {
+        if (length <= 0) return [];
+        return this.storage.selectByLength(length);
+    }
+
+    /**
+     * Delete transactions in the storage.
+     * @param tx transaction to be deleted
+     */
+    public async remove(tx: DBTransaction | DBTransaction[]) {
+        try {
+            if (Array.isArray(tx)) {
+                for (const t of tx) {
+                    await this.storage.deleteByHash(t.hash);
+                }
+            } else {
+                await this.storage.deleteByHash(tx.hash);
+            }
+        } catch (e) {
+            throw new Error("TransactionPool::remove error:" + e);
+        }
+    }
+
+    /**
+     * Total number of transactions in storage
+     */
+    public async length(): Promise<number> {
+        return this.storage.length();
     }
 }

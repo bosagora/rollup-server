@@ -14,6 +14,7 @@ import { logger } from "../common/Logger";
 import { TransactionPool } from "./TransactionPool";
 
 import { Block, Hash, hashFull, Transaction, Utils } from "rollup-pm-sdk";
+import { DBTransaction } from "../storage/RollupStorage";
 
 export interface IBlockExternalizer {
     externalize(block: Block, cid: string): void;
@@ -71,6 +72,7 @@ export class Node extends Scheduler {
     public setOption(options: any) {
         if (options) {
             if (options.config && options.config instanceof Config) this._config = options.config;
+            if (options?.storage) this.pool.storage = options.storage;
         }
         if (this._config !== undefined) {
             this._ipfs = new IPFSManager(this._config.node.ipfs_api_url);
@@ -82,8 +84,8 @@ export class Node extends Scheduler {
         this.externalizer = value;
     }
 
-    public receive(tx: Transaction) {
-        this.pool.add(tx);
+    public async receive(tx: Transaction) {
+        await this.pool.add(DBTransaction.make(tx));
     }
 
     /**
@@ -97,12 +99,14 @@ export class Node extends Scheduler {
             const new_period = Math.floor(this.new_time_stamp / this.config.node.interval);
             if (old_period !== new_period) {
                 this.old_time_stamp = this.new_time_stamp;
-                const txs = this.pool.get(this.config.node.max_txs);
+                const txs = await this.pool.get(this.config.node.max_txs);
 
                 if (txs.length > 0) {
-                    const block = Block.createBlock(this.prev_hash, this.prev_height, txs);
+                    const txList = DBTransaction.converterTxArray(txs);
+                    const block = Block.createBlock(this.prev_hash, this.prev_height, txList);
                     let cid: string = "";
                     let success: boolean = true;
+
                     try {
                         // Save block to IPFS
                         cid = await this.ipfs.add(JSON.stringify(block));
@@ -113,7 +117,7 @@ export class Node extends Scheduler {
                     if (success) {
                         this.prev_hash = hashFull(block.header);
                         this.prev_height = block.header.height;
-                        this.pool.remove(txs);
+                        await this.pool.remove(txs);
                         if (this.externalizer !== undefined) this.externalizer.externalize(block, cid);
                         // TODO  Save Smart Contract
                     }
