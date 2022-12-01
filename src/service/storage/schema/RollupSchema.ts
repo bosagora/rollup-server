@@ -11,6 +11,7 @@ export const createTableQuery = `
     "timestamp" INTEGER,
     exchange_user_id TEXT,
     exchange_id TEXT,
+    signer TEXT,
     signature TEXT
   )
 `;
@@ -24,8 +25,9 @@ export const insertQuery = `
     "timestamp",
     exchange_user_id,
     exchange_id,
+    signer,
     signature
-    ) VALUES (?,?,?,?,?,?,?,?)
+    ) VALUES (?,?,?,?,?,?,?,?,?)
 `;
 
 export const deleteQuery = `
