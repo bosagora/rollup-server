@@ -31,6 +31,7 @@ export class RollupStorage extends Storage {
                     row.timestamp,
                     row.exchange_user_id,
                     row.exchange_id,
+                    row.signer,
                     row.signature,
                 ]);
             });
