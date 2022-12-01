@@ -15,6 +15,7 @@ import { WebService } from "../modules/service/WebService";
 import { Config } from "./common/Config";
 import { cors_options } from "./option/cors";
 import { RollupRouter } from "./routers/RollupRouter";
+import { RollupStorage } from "./storage/RollupStorage";
 
 export class RollupServer extends WebService {
     /**
@@ -31,16 +32,19 @@ export class RollupServer extends WebService {
 
     public readonly wallet_router: RollupRouter;
 
+    private readonly storage: RollupStorage;
+
     /**
      * Constructor
      * @param config Configuration
      * @param schedules Array of IScheduler
      */
-    constructor(config: Config, schedules?: IScheduler[]) {
+    constructor(config: Config, storage: RollupStorage, schedules?: IScheduler[]) {
         super(config.server.port, config.server.address);
 
         this.config = config;
         this.wallet_router = new RollupRouter(this, this.config);
+        this.storage = storage;
 
         if (schedules) {
             schedules.forEach((m) => this.schedules.push(m));
@@ -48,6 +52,7 @@ export class RollupServer extends WebService {
                 m.setOption({
                     config: this.config,
                     router: this.wallet_router,
+                    storage: this.storage,
                 })
             );
         }

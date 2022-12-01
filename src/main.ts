@@ -13,6 +13,7 @@ import { Config } from "./service/common/Config";
 import { logger, Logger } from "./service/common/Logger";
 import { RollupServer } from "./service/RollupServer";
 import { Node } from "./service/scheduler/Node";
+import { RollupStorage } from "./service/storage/RollupStorage";
 
 let server: RollupServer;
 
@@ -52,21 +53,27 @@ async function main() {
         }
     }
 
-    server = new RollupServer(config, schedulers);
-    return server.start().catch((error: any) => {
-        // handle specific listen errors with friendly messages
-        switch (error.code) {
-            case "EACCES":
-                logger.error(`${config.server.port} requires elevated privileges`);
-                break;
-            case "EADDRINUSE":
-                logger.error(`Port ${config.server.port} is already in use`);
-                break;
-            default:
-                logger.error(`An error occurred while starting the server: ${error.stack}`);
-        }
-        process.exit(1);
-    });
+    RollupStorage.make(config.database)
+        .then((storage: RollupStorage) => {
+            server = new RollupServer(config, storage, schedulers);
+            return server.start().catch((error: any) => {
+                // handle specific listen errors with friendly messages
+                switch (error.code) {
+                    case "EACCES":
+                        logger.error(`${config.server.port} requires elevated privileges`);
+                        break;
+                    case "EADDRINUSE":
+                        logger.error(`Port ${config.server.port} is already in use`);
+                        break;
+                    default:
+                        logger.error(`An error occurred while starting the server: ${error.stack}`);
+                }
+                process.exit(1);
+            });
+        })
+        .catch(() => {
+            process.exit(1);
+        });
 }
 
 // We recommend this pattern to be able to use async/await everywhere
