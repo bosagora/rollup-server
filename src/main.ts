@@ -41,8 +41,6 @@ async function main() {
         tp.level = config.logging.level;
     });
 
-    await config.decrypt();
-
     logger.info(`address: ${config.server.address}`);
     logger.info(`port: ${config.server.port}`);
 
