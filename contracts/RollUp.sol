@@ -56,6 +56,9 @@ contract RollUp is Ownable {
             "E001: Height is incorrect."
         );
 
+        if (_height != 0 && _prevBlock != (blockArray[_height - 1]).curBlock)
+            revert("E002: The previous block hash is not valid.");
+
         BlockHeader memory blockHeader = BlockHeader({
             height: _height,
             curBlock: _curBlock,
@@ -87,7 +90,7 @@ contract RollUp is Ownable {
             string memory
         )
     {
-        require(_height <= lastHeight, "E002: Must be not more than last height.");
+        require(_height <= lastHeight, "E003: Must be not more than last height.");
         BlockHeader memory blockHeader = blockArray[_height];
         return (
             blockHeader.height,
@@ -114,8 +117,8 @@ contract RollUp is Ownable {
             string memory
         )
     {
-        require(_blockHash.length == 32, "E003: The hash length is not valid.");
-        require((blockMap[_blockHash]).exists, "E004: No corresponding block hash key value.");
+        require(_blockHash.length == 32, "E004: The hash length is not valid.");
+        require((blockMap[_blockHash]).exists, "E005: No corresponding block hash key value.");
 
         uint64 height = blockMap[_blockHash].height;
         BlockHeader memory blockHeader = blockArray[height];
