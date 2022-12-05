@@ -33,9 +33,9 @@ export class TransactionPool {
     public async add(tx: DBTransaction | DBTransaction[]) {
         try {
             if (Array.isArray(tx)) {
-                await this.storage.insert(tx);
+                await this.storage.txInsert(tx);
             } else {
-                await this.storage.insert([tx]);
+                await this.storage.txInsert([tx]);
             }
         } catch (e) {
             throw new Error("TransactionPool::added error:" + e);
@@ -48,7 +48,7 @@ export class TransactionPool {
      */
     public async get(length: number): Promise<DBTransaction[]> {
         if (length <= 0) return [];
-        return this.storage.selectByLength(length);
+        return this.storage.selectTxByLength(length);
     }
 
     /**
@@ -59,10 +59,10 @@ export class TransactionPool {
         try {
             if (Array.isArray(tx)) {
                 for (const t of tx) {
-                    await this.storage.deleteByHash(t.hash);
+                    await this.storage.deleteTxByHash(t.hash);
                 }
             } else {
-                await this.storage.deleteByHash(tx.hash);
+                await this.storage.deleteTxByHash(tx.hash);
             }
         } catch (e) {
             throw new Error("TransactionPool::remove error:" + e);
@@ -73,6 +73,6 @@ export class TransactionPool {
      * Total number of transactions in storage
      */
     public async length(): Promise<number> {
-        return this.storage.length();
+        return this.storage.txsLength();
     }
 }

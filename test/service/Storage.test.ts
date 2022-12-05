@@ -49,14 +49,14 @@ describe("Test of Storage", () => {
     });
 
     it("Insert transaction data", async () => {
-        assert.strictEqual(await storage.length(), 0);
-        const res = await storage.insert([tx, tx2]);
+        assert.strictEqual(await storage.txsLength(), 0);
+        const res = await storage.txInsert([tx, tx2]);
         assert.strictEqual(res, true);
-        assert.strictEqual(await storage.length(), 2);
+        assert.strictEqual(await storage.txsLength(), 2);
     });
 
     it("Select transaction data by hash", async () => {
-        const res1 = await storage.selectByHash(tx?.hash);
+        const res1 = await storage.selectTxByHash(tx?.hash);
         assert.notStrictEqual(res1, null);
         if (res1) {
             assert.strictEqual(res1.user_id, tx.user_id);
@@ -68,7 +68,7 @@ describe("Test of Storage", () => {
             assert.strictEqual(res1.signer, tx.signer);
             assert.strictEqual(res1.signature, tx.signature);
         }
-        const res2 = await storage.selectByHash(tx2.hash);
+        const res2 = await storage.selectTxByHash(tx2.hash);
         assert.notStrictEqual(res2, null);
         if (res2) {
             assert.strictEqual(res2.trade_id, tx2.trade_id);
@@ -84,20 +84,20 @@ describe("Test of Storage", () => {
     });
 
     it("Select transaction data by length", async () => {
-        let res = await storage.selectByLength(1);
+        let res = await storage.selectTxByLength(1);
         assert.strictEqual(res.length, 1);
 
-        res = await storage.selectByLength(2);
+        res = await storage.selectTxByLength(2);
         assert.strictEqual(res.length, 2);
     });
 
     it("Delete transaction data", async () => {
-        const res = await storage.deleteByHash(tx.hash);
+        const res = await storage.deleteTxByHash(tx.hash);
         assert.strictEqual(res, true);
 
-        const resS = await storage.selectByHash(tx.hash);
+        const resS = await storage.selectTxByHash(tx.hash);
         assert.strictEqual(resS, null);
 
-        assert.strictEqual(await storage.length(), 1);
+        assert.strictEqual(await storage.txsLength(), 1);
     });
 });
