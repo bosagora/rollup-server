@@ -3,12 +3,12 @@ import { hashFull, Transaction } from "rollup-pm-sdk";
 import { Storage } from "../../modules/storage/Storage";
 import { IDatabaseConfig } from "../common/Config";
 import {
-    createTxTableQuery,
-    deleteByHashQuery,
-    insertQuery,
-    selectByHashQuery,
-    selectByLengthQuery,
-    selectLength,
+    createTablesQuery,
+    deleteTxByHashQuery,
+    insertTxQuery,
+    selectTxByHashQuery,
+    selectTxByLengthQuery,
+    selectTxsLength,
 } from "./schema/RollupSchema";
 
 export class RollupStorage extends Storage {
@@ -18,7 +18,7 @@ export class RollupStorage extends Storage {
 
     public createTables(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this.database.exec(createTxTableQuery, (err) => {
+            this.database.exec(createTablesQuery, (err) => {
                 if (err) reject(err);
                 resolve();
             });
@@ -39,7 +39,7 @@ export class RollupStorage extends Storage {
     public insert(params: DBTransaction[]): Promise<boolean> {
         return new Promise((resolve, reject) => {
             if (params.length < 1) reject("The data is not available.");
-            const statement = this.database.prepare(insertQuery);
+            const statement = this.database.prepare(insertTxQuery);
             params.forEach((row) => {
                 statement.run([
                     row.trade_id,
@@ -65,7 +65,7 @@ export class RollupStorage extends Storage {
 
     public selectByLength(length: number): Promise<DBTransaction[]> {
         return new Promise<DBTransaction[]>((resolve, reject) => {
-            this.database.all(selectByLengthQuery, [length], (err: Error | null, row: DBTransaction[]) => {
+            this.database.all(selectTxByLengthQuery, [length], (err: Error | null, row: DBTransaction[]) => {
                 if (err) reject(err);
                 const list = row.map((tx: DBTransaction) => tx as DBTransaction);
                 resolve(list);
@@ -75,7 +75,7 @@ export class RollupStorage extends Storage {
 
     public selectByHash(hash: string): Promise<DBTransaction | null> {
         return new Promise<DBTransaction | null>((resolve, reject) => {
-            this.database.all(selectByHashQuery, [hash], (err: Error | null, row: DBTransaction[]) => {
+            this.database.all(selectTxByHashQuery, [hash], (err: Error | null, row: DBTransaction[]) => {
                 if (err) reject(err);
                 if (row.length > 0) {
                     resolve(row[0] as DBTransaction);
@@ -88,7 +88,7 @@ export class RollupStorage extends Storage {
 
     public deleteByHash(hash: string): Promise<boolean> {
         return new Promise((resolve, reject) => {
-            this.database.run(deleteByHashQuery, [hash], (err: Error | null) => {
+            this.database.run(deleteTxByHashQuery, [hash], (err: Error | null) => {
                 if (err) reject(err);
                 resolve(true);
             });
@@ -97,7 +97,7 @@ export class RollupStorage extends Storage {
 
     public length(): Promise<number> {
         return new Promise((resolve, reject) => {
-            this.database.all(selectLength, [], (err: Error | null, row) => {
+            this.database.all(selectTxsLength, [], (err: Error | null, row) => {
                 if (err) reject(err);
                 if (row?.length) {
                     resolve(row[0].count);
