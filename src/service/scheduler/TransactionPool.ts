@@ -8,14 +8,20 @@
  *       MIT License. See LICENSE for details.
  */
 
+import { logger } from "../common/Logger";
 import { DBTransaction, RollupStorage } from "../storage/RollupStorage";
 
 export class TransactionPool {
     private _storage: RollupStorage | undefined;
 
     get storage(): RollupStorage {
-        return this._storage as RollupStorage;
+        if (this._storage !== undefined) return this._storage;
+        else {
+            logger.error("Storage is not ready yet.");
+            process.exit(1);
+        }
     }
+
     set storage(storage) {
         this._storage = storage;
     }

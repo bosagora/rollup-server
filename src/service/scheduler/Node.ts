@@ -14,7 +14,7 @@ import { logger } from "../common/Logger";
 import { TransactionPool } from "./TransactionPool";
 
 import { Block, Hash, hashFull, Transaction, Utils } from "rollup-pm-sdk";
-import { DBTransaction } from "../storage/RollupStorage";
+import { DBTransaction, RollupStorage } from "../storage/RollupStorage";
 
 export interface IBlockExternalizer {
     externalize(block: Block, cid: string): void;
@@ -33,6 +33,8 @@ export class Node extends Scheduler {
     private new_time_stamp: number;
 
     private _ipfs: IPFSManager | undefined;
+
+    private _storage: RollupStorage | undefined;
 
     constructor() {
         super(1);
@@ -65,6 +67,14 @@ export class Node extends Scheduler {
         }
     }
 
+    private get storage(): RollupStorage {
+        if (this._storage !== undefined) return this._storage;
+        else {
+            logger.error("Storage is not ready yet.");
+            process.exit(1);
+        }
+    }
+
     /**
      * 실행에 필요한 여러 객체를 설정한다
      * @param options 옵션
@@ -72,7 +82,10 @@ export class Node extends Scheduler {
     public setOption(options: any) {
         if (options) {
             if (options.config && options.config instanceof Config) this._config = options.config;
-            if (options?.storage) this.pool.storage = options.storage;
+            if (options.storage && options.storage instanceof RollupStorage) {
+                this._storage = options.storage;
+                this.pool.storage = options.storage;
+            }
         }
         if (this._config !== undefined) {
             this._ipfs = new IPFSManager(this._config.node.ipfs_api_url);
