@@ -7,6 +7,7 @@ import {
     deleteTxByHashQuery,
     insertBlockQuery,
     insertTxQuery,
+    selectBlockLastHeight,
     selectTxByHashQuery,
     selectTxByLengthQuery,
     selectTxsLength,
@@ -36,7 +37,7 @@ export class RollupStorage extends Storage {
             });
         });
     }
-    public blockInsert(_block: Block, _CID: string): Promise<boolean> {
+    public insertBlock(_block: Block, _CID: string): Promise<boolean> {
         return new Promise((resolve, reject) => {
             if (_block?.header == undefined) reject("The data is not available.");
             if (_CID.length <= 0) reject("The CID is not valid.");
@@ -61,7 +62,7 @@ export class RollupStorage extends Storage {
         });
     }
 
-    public txInsert(params: DBTransaction[]): Promise<boolean> {
+    public insertTx(params: DBTransaction[]): Promise<boolean> {
         return new Promise((resolve, reject) => {
             if (params.length < 1) reject("The data is not available.");
             const statement = this.database.prepare(insertTxQuery);
@@ -121,12 +122,25 @@ export class RollupStorage extends Storage {
         });
     }
 
-    public txsLength(): Promise<number> {
+    public selectTxsLength(): Promise<number> {
         return new Promise((resolve, reject) => {
             this.database.all(selectTxsLength, [], (err: Error | null, row) => {
                 if (err) reject(err);
                 if (row?.length) {
                     resolve(row[0].count);
+                } else {
+                    reject(null);
+                }
+            });
+        });
+    }
+
+    public selectLastHeight(): Promise<number> {
+        return new Promise((resolve, reject) => {
+            this.database.all(selectBlockLastHeight, [], (err: Error | null, row) => {
+                if (err) reject(err);
+                if (row?.length) {
+                    resolve(row[0].height);
                 } else {
                     reject(null);
                 }
