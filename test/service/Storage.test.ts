@@ -1,9 +1,11 @@
 import * as assert from "assert";
+import { BigNumber } from "ethers";
 import path from "path";
+import { Block, Hash, Transaction, BlockHeader } from "rollup-pm-sdk";
 import { Config } from "../../src/service/common/Config";
 import { DBTransaction, RollupStorage } from "../../src/service/storage/RollupStorage";
 
-import { Transaction } from "rollup-pm-sdk";
+import { Block, Transaction, Utils } from "rollup-pm-sdk";
 
 describe("Test of Storage", () => {
     let storage: RollupStorage;
@@ -34,6 +36,14 @@ describe("Test of Storage", () => {
         )
     );
 
+    const block = Block.createBlock(
+        new Hash("0x0000000000000000000000000000000000000000000000000000000000000000"),
+        BigInt(0),
+        DBTransaction.converterTxArray([tx, tx2])
+    );
+
+    const CID = "QmW3CT4SHmso5dRJdsjR8GL1qmt79HkdAebCn2uNaWXFYh";
+
     it("Create storage", async () => {
         const config: Config = new Config();
         config.readFromFile(path.resolve("test", "service", "config.test.yaml"));
@@ -48,11 +58,17 @@ describe("Test of Storage", () => {
         })();
     });
 
+    it("Insert block data", async () => {
+        assert.strictEqual(await storage.selectLastHeight(), null);
+        const res = await storage.insertBlock(block, CID);
+        assert.strictEqual(await storage.selectLastHeight(), 1);
+    });
+
     it("Insert transaction data", async () => {
-        assert.strictEqual(await storage.txsLength(), 0);
-        const res = await storage.txInsert([tx, tx2]);
+        assert.strictEqual(await storage.selectTxsLength(), 0);
+        const res = await storage.insertTx([tx, tx2]);
         assert.strictEqual(res, true);
-        assert.strictEqual(await storage.txsLength(), 2);
+        assert.strictEqual(await storage.selectTxsLength(), 2);
     });
 
     it("Select transaction data by hash", async () => {
@@ -98,6 +114,6 @@ describe("Test of Storage", () => {
         const resS = await storage.selectTxByHash(tx.hash);
         assert.strictEqual(resS, null);
 
-        assert.strictEqual(await storage.txsLength(), 1);
+        assert.strictEqual(await storage.selectTxsLength(), 1);
     });
 });

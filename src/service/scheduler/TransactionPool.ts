@@ -33,9 +33,9 @@ export class TransactionPool {
     public async add(tx: DBTransaction | DBTransaction[]) {
         try {
             if (Array.isArray(tx)) {
-                await this.storage.txInsert(tx);
+                await this.storage.insertTx(tx);
             } else {
-                await this.storage.txInsert([tx]);
+                await this.storage.insertTx([tx]);
             }
         } catch (e) {
             throw new Error("TransactionPool::added error:" + e);
@@ -73,6 +73,6 @@ export class TransactionPool {
      * Total number of transactions in storage
      */
     public async length(): Promise<number> {
-        return this.storage.txsLength();
+        return this.storage.selectTxsLength();
     }
 }

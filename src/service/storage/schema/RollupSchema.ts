@@ -62,7 +62,7 @@ export const selectBlockByHeightQuery = `
     SELECT * FROM blocks WHERE height = ?
 `;
 
-export const selectBlocksLastHeight = `
+export const selectBlockLastHeight = `
     SELECT MAX(height) as height FROM blocks
 `;
 

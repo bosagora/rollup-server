@@ -130,7 +130,7 @@ export class Node extends Scheduler {
                     if (success) {
                         this.prev_hash = hashFull(block.header);
                         this.prev_height = block.header.height;
-                        await this.storage.blockInsert(block, cid);
+                        await this.storage.insertBlock(block, cid);
                         await this.pool.remove(txs);
                         if (this.externalizer !== undefined) this.externalizer.externalize(block, cid);
                         // TODO  Save Smart Contract
