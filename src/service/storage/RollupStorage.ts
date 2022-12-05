@@ -1,10 +1,11 @@
 import { plainToClass } from "class-transformer";
-import { hashFull, Transaction } from "rollup-pm-sdk";
+import { Block, hashFull, Hash, Transaction, BlockHeader } from "rollup-pm-sdk";
 import { Storage } from "../../modules/storage/Storage";
 import { IDatabaseConfig } from "../common/Config";
 import {
     createTablesQuery,
     deleteTxByHashQuery,
+    insertBlockQuery,
     insertTxQuery,
     selectTxByHashQuery,
     selectTxByLengthQuery,
@@ -35,11 +36,36 @@ export class RollupStorage extends Storage {
             });
         });
     }
+    public blockInsert(_block: Block, _CID: string): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            if (_block?.header == undefined) reject("The data is not available.");
+            if (_CID.length <= 0) reject("The CID is not valid.");
+            const cur_hash: Hash = hashFull(_block);
+            const header: BlockHeader = _block.header;
+            this.database.run(
+                insertBlockQuery,
+                [
+                    header.height,
+                    cur_hash.toString(),
+                    header.prev_block.toString(),
+                    header.merkle_root.toString(),
+                    header.timestamp,
+                    _CID,
+                    0,
+                ],
+                (err: Error | null) => {
+                    if (err) reject(err);
+                    resolve(true);
+                }
+            );
+        });
+    }
 
-    public insert(params: DBTransaction[]): Promise<boolean> {
+    public txInsert(params: DBTransaction[]): Promise<boolean> {
         return new Promise((resolve, reject) => {
             if (params.length < 1) reject("The data is not available.");
             const statement = this.database.prepare(insertTxQuery);
+
             params.forEach((row) => {
                 statement.run([
                     row.trade_id,
@@ -63,7 +89,7 @@ export class RollupStorage extends Storage {
         });
     }
 
-    public selectByLength(length: number): Promise<DBTransaction[]> {
+    public selectTxByLength(length: number): Promise<DBTransaction[]> {
         return new Promise<DBTransaction[]>((resolve, reject) => {
             this.database.all(selectTxByLengthQuery, [length], (err: Error | null, row: DBTransaction[]) => {
                 if (err) reject(err);
@@ -73,7 +99,7 @@ export class RollupStorage extends Storage {
         });
     }
 
-    public selectByHash(hash: string): Promise<DBTransaction | null> {
+    public selectTxByHash(hash: string): Promise<DBTransaction | null> {
         return new Promise<DBTransaction | null>((resolve, reject) => {
             this.database.all(selectTxByHashQuery, [hash], (err: Error | null, row: DBTransaction[]) => {
                 if (err) reject(err);
@@ -86,7 +112,7 @@ export class RollupStorage extends Storage {
         });
     }
 
-    public deleteByHash(hash: string): Promise<boolean> {
+    public deleteTxByHash(hash: string): Promise<boolean> {
         return new Promise((resolve, reject) => {
             this.database.run(deleteTxByHashQuery, [hash], (err: Error | null) => {
                 if (err) reject(err);
@@ -95,7 +121,7 @@ export class RollupStorage extends Storage {
         });
     }
 
-    public length(): Promise<number> {
+    public txsLength(): Promise<number> {
         return new Promise((resolve, reject) => {
             this.database.all(selectTxsLength, [], (err: Error | null, row) => {
                 if (err) reject(err);
