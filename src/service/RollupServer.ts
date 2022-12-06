@@ -15,6 +15,7 @@ import { WebService } from "../modules/service/WebService";
 import { Config } from "./common/Config";
 import { cors_options } from "./option/cors";
 import { RollupRouter } from "./routers/RollupRouter";
+import { TransactionPool } from "./scheduler/TransactionPool";
 import { RollupStorage } from "./storage/RollupStorage";
 
 export class RollupServer extends WebService {
@@ -30,10 +31,11 @@ export class RollupServer extends WebService {
      */
     private readonly config: Config;
 
-    public readonly wallet_router: RollupRouter;
+    public readonly rollupRouter: RollupRouter;
 
     private readonly storage: RollupStorage;
 
+    public readonly pool: TransactionPool;
     /**
      * Constructor
      * @param config Configuration
@@ -43,16 +45,20 @@ export class RollupServer extends WebService {
         super(config.server.port, config.server.address);
 
         this.config = config;
-        this.wallet_router = new RollupRouter(this, this.config);
         this.storage = storage;
+        this.pool = new TransactionPool();
+        this.pool.storage = storage;
+
+        this.rollupRouter = new RollupRouter(this, config, this.pool);
 
         if (schedules) {
             schedules.forEach((m) => this.schedules.push(m));
             this.schedules.forEach((m) =>
                 m.setOption({
                     config: this.config,
-                    router: this.wallet_router,
+                    router: this.rollupRouter,
                     storage: this.storage,
+                    pool: this.pool,
                 })
             );
         }
@@ -68,7 +74,7 @@ export class RollupServer extends WebService {
         this.app.use(bodyParser.json({ limit: "1mb" }));
         this.app.use(cors(cors_options));
 
-        this.wallet_router.registerRoutes();
+        this.rollupRouter.registerRoutes();
 
         this.schedules.forEach((m) => m.start());
 

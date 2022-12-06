@@ -25,7 +25,7 @@ export class Node extends Scheduler {
 
     public externalizer: IBlockExternalizer | undefined;
 
-    private pool: TransactionPool;
+    private _pool: TransactionPool | undefined;
     private prev_hash: Hash;
     private prev_height: bigint;
 
@@ -38,7 +38,6 @@ export class Node extends Scheduler {
 
     constructor() {
         super(1);
-        this.pool = new TransactionPool();
         this.prev_hash = Hash.Null;
         this.prev_height = 0n;
 
@@ -75,6 +74,14 @@ export class Node extends Scheduler {
         }
     }
 
+    private get pool(): TransactionPool {
+        if (this._pool !== undefined) return this._pool;
+        else {
+            logger.error("TransactionPool is not ready yet.");
+            process.exit(1);
+        }
+    }
+
     /**
      * 실행에 필요한 여러 객체를 설정한다
      * @param options 옵션
@@ -84,7 +91,9 @@ export class Node extends Scheduler {
             if (options.config && options.config instanceof Config) this._config = options.config;
             if (options.storage && options.storage instanceof RollupStorage) {
                 this._storage = options.storage;
-                this.pool.storage = options.storage;
+            }
+            if (options.pool && options.pool instanceof TransactionPool) {
+                this._pool = options.pool;
             }
         }
         if (this._config !== undefined) {

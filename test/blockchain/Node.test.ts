@@ -10,13 +10,14 @@
 
 import * as ethers from "ethers";
 
-import { Block, Hash, hashFull, Transaction, Utils } from "rollup-pm-sdk";
+import { Block, Hash, Transaction, Utils } from "rollup-pm-sdk";
 import { Config } from "../../src/service/common/Config";
 import { IBlockExternalizer, Node } from "../../src/service/scheduler/Node";
 import { delay } from "../Utility";
 
 import * as assert from "assert";
 import path from "path";
+import { TransactionPool } from "../../src/service/scheduler/TransactionPool";
 import { RollupStorage } from "../../src/service/storage/RollupStorage";
 
 class BlockExternalizer implements IBlockExternalizer {
@@ -48,7 +49,9 @@ describe("Test of Node", function () {
             });
         })();
         node = new Node();
-        node.setOption({ config, storage });
+        const pool = new TransactionPool();
+        pool.storage = storage;
+        node.setOption({ config, storage, pool });
         externalizer = new BlockExternalizer();
         node.setExternalizer(externalizer);
     });
