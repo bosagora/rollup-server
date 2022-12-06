@@ -144,3 +144,5 @@ ipfs_staging
 
 /db/*.db
 /typechain-types/
+
+*.iml
