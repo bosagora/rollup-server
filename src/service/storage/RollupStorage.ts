@@ -39,7 +39,7 @@ export class RollupStorage extends Storage {
     }
     public insertBlock(_block: Block, _CID: string): Promise<boolean> {
         return new Promise((resolve, reject) => {
-            if (_block?.header == undefined) reject("The data is not available.");
+            if (_block?.header === undefined) reject("The data is not available.");
             if (_CID.length <= 0) reject("The CID is not valid.");
             const cur_hash: Hash = hashFull(_block);
             const header: BlockHeader = _block.header;
