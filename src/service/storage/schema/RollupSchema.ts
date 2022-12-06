@@ -10,8 +10,7 @@ export const createTablesQuery = `
     prev_block TEXT,
     merkle_root TEXT,
     "timestamp" INTEGER,
-    CID TEXT,
-    sended INTEGER DEFAULT 0
+    CID TEXT
   );
   CREATE INDEX curBlockHashIndex on blocks (cur_block);
 
@@ -38,9 +37,8 @@ export const insertBlockQuery = `
       prev_block,
       merkle_root,
       "timestamp",
-      CID,
-      sended
-    ) VALUES (?,?,?,?,?,?,?)
+      CID
+    ) VALUES (?,?,?,?,?,?)
 `;
 
 export const insertTxQuery = `

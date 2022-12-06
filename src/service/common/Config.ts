@@ -478,9 +478,11 @@ export class DatabaseConfig implements IDatabaseConfig {
 }
 
 export interface IContractsConfig {
+    rollup_manager_key: string;
     rollup_address: string;
 }
 export class ContractConfig implements IContractsConfig {
+    public rollup_manager_key: string;
     public rollup_address: string;
 
     /**
@@ -488,9 +490,11 @@ export class ContractConfig implements IContractsConfig {
      */
     constructor() {
         const defaults = ContractConfig.defaultValue();
+        this.rollup_manager_key = defaults.rollup_manager_key;
         this.rollup_address = defaults.rollup_address;
     }
     public readFromObject(config: IContractsConfig) {
+        if (config.rollup_manager_key !== undefined) this.rollup_manager_key = config.rollup_manager_key;
         if (config.rollup_address !== undefined) this.rollup_address = config.rollup_address;
     }
     /**
@@ -498,6 +502,7 @@ export class ContractConfig implements IContractsConfig {
      */
     public static defaultValue(): IContractsConfig {
         return {
+            rollup_manager_key: "0x94bf5604b9eb7990985dfabbfd1298a16a3c94cb79a5fa39638279ba9ca48a80",
             rollup_address: "0x0000000000000000000000000000000000000000",
         } as IContractsConfig;
     }

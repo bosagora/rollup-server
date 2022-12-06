@@ -13,6 +13,7 @@ import { Config } from "./service/common/Config";
 import { logger, Logger } from "./service/common/Logger";
 import { RollupServer } from "./service/RollupServer";
 import { Node } from "./service/scheduler/Node";
+import { SendBlock } from "./service/scheduler/SendBlock";
 import { RollupStorage } from "./service/storage/RollupStorage";
 
 let server: RollupServer;
@@ -47,9 +48,13 @@ async function main() {
 
     const schedulers: IScheduler[] = [];
     if (config.scheduler.enable) {
-        const scheduler = config.scheduler.getScheduler("node");
+        let scheduler = config.scheduler.getScheduler("node");
         if (scheduler && scheduler.enable) {
-            schedulers.push(new Node());
+            schedulers.push(new Node(scheduler.interval));
+        }
+        scheduler = config.scheduler.getScheduler("send_block");
+        if (scheduler && scheduler.enable) {
+            schedulers.push(new SendBlock(scheduler.interval));
         }
     }
 

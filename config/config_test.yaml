@@ -3,9 +3,9 @@
 ################################################################################
 server:
     # Address to which we bind (default: 127.0.0.1)
-    address: "0.0.0.0"
+    address: "127.0.0.1"
     # Port on which we bind (default: 3000)
-    port: 3001
+    port: 3000
 
 ################################################################################
 ##                               Logging options                              ##
@@ -14,12 +14,12 @@ logging:
     # The name of the folder where the logs are stored.
     folder: logs
     # Values: error, warn, info, http, verbose, debug, silly
-    level: http
+    level: debug
     # Default to false
     console: true
 
 node:
-  interval: 5
+  interval: 10
   max_txs: 8
   ipfs_api_url: http://localhost:5001
   ipfs_gateway_url: http://localhost:8080
@@ -31,11 +31,15 @@ scheduler:
     - name: node
       enable: true
       interval: 1
+    - name: send_block
+      enable: true
+      interval: 1
 
 database:
   path: ":memory:"
 
 contracts:
+  rollup_manager_key: "0x94bf5604b9eb7990985dfabbfd1298a16a3c94cb79a5fa39638279ba9ca48a80"
   rollup_address: "0x0000000000000000000000000000000000000000"
 
 authorization:

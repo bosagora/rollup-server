@@ -36,8 +36,9 @@ export class Node extends Scheduler {
 
     private _storage: RollupStorage | undefined;
 
-    constructor() {
-        super(1);
+    constructor(interval: number = 1) {
+        super(interval);
+        this._pool = new TransactionPool();
         this.prev_hash = Hash.Null;
         this.prev_height = 0n;
 

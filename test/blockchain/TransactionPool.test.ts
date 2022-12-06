@@ -45,7 +45,7 @@ describe("TransactionPool", () => {
     it("Create TransactionPool", async () => {
         tx_pool = new TransactionPool();
         const config: Config = new Config();
-        config.readFromFile(path.resolve("test", "service", "config.test.yaml"));
+        config.readFromFile(path.resolve(process.cwd(), "config/config_test.yaml"));
 
         const storage = await (() => {
             return new Promise<RollupStorage>((resolve, reject) => {
