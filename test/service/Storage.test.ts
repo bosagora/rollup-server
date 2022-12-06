@@ -35,7 +35,7 @@ describe("Test of Storage", () => {
 
     it("Create storage", async () => {
         const config: Config = new Config();
-        config.readFromFile(path.resolve("test", "service", "config.test.yaml"));
+        config.readFromFile(path.resolve(process.cwd(), "config/config_test.yaml"));
 
         storage = await (() => {
             return new Promise<RollupStorage>((resolve, reject) => {

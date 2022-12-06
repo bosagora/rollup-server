@@ -4,7 +4,7 @@ import { solidity } from "ethereum-waffle";
 import { BigNumber } from "ethers";
 import { ethers, waffle } from "hardhat";
 import { Utils } from "rollup-pm-sdk";
-import { RollUp } from "../../typechain";
+import { RollUp } from "../../typechain-types";
 
 chai.use(solidity);
 
@@ -19,7 +19,7 @@ describe("Test of RollUp Contract", () => {
     before(async () => {
         const RollUpFactory = await ethers.getContractFactory("RollUp");
 
-        contract = await RollUpFactory.connect(admin_signer).deploy();
+        contract = (await RollUpFactory.connect(admin_signer).deploy()) as RollUp;
         await contract.deployed();
     });
 

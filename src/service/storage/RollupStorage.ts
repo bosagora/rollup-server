@@ -7,6 +7,7 @@ import {
     deleteTxByHashQuery,
     insertBlockQuery,
     insertTxQuery,
+    selectBlockByHeightQuery,
     selectBlockLastHeight,
     selectTxByHashQuery,
     selectTxByLengthQuery,
@@ -46,13 +47,12 @@ export class RollupStorage extends Storage {
             this.database.run(
                 insertBlockQuery,
                 [
-                    header.height,
+                    header.height.toString(),
                     cur_hash.toString(),
                     header.prev_block.toString(),
                     header.merkle_root.toString(),
                     header.timestamp,
                     _CID,
-                    0,
                 ],
                 (err: Error | null) => {
                     if (err) reject(err);
@@ -142,8 +142,17 @@ export class RollupStorage extends Storage {
                 if (row?.length) {
                     resolve(row[0].height);
                 } else {
-                    reject(null);
+                    resolve(Number.NaN);
                 }
+            });
+        });
+    }
+
+    public selectBlockByHeight(height: number): Promise<any> {
+        return new Promise<DBTransaction[]>((resolve, reject) => {
+            this.database.all(selectBlockByHeightQuery, [height], (err: Error | null, row: any) => {
+                if (err) reject(err);
+                resolve(row[0]);
             });
         });
     }

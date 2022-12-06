@@ -6,14 +6,14 @@ import path from "path";
 describe("Test of Config", () => {
     it("Test parsing the settings of a string", async () => {
         const config: Config = new Config();
-        config.readFromFile(path.resolve("test", "service", "config.test.yaml"));
+        config.readFromFile(path.resolve(process.cwd(), "config/config_test.yaml"));
         assert.strictEqual(config.server.address, "127.0.0.1");
         assert.strictEqual(config.server.port.toString(), "3000");
         assert.strictEqual(config.logging.folder, path.resolve("logs"));
         assert.strictEqual(config.logging.level, "debug");
 
         assert.strictEqual(config.scheduler.enable, true);
-        assert.strictEqual(config.scheduler.items.length, 1);
+        assert.strictEqual(config.scheduler.items.length, 2);
         assert.strictEqual(config.scheduler.items[0].name, "node");
         assert.strictEqual(config.scheduler.items[0].enable, true);
         assert.strictEqual(config.scheduler.items[0].interval, 1);
