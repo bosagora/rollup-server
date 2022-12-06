@@ -37,3 +37,6 @@ database:
 
 contracts:
   rollup_address: ${ROLLUP_ADDRESS}
+
+authorization:
+  api_access_token:  ${ACCESS_SECRET}

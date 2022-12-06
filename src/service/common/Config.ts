@@ -9,11 +9,11 @@
  */
 
 import { ArgumentParser } from "argparse";
-import { Utils } from "rollup-pm-sdk";
 import extend from "extend";
 import fs from "fs";
 import ip from "ip";
 import path from "path";
+import { Utils } from "rollup-pm-sdk";
 import { readYamlEnvSync } from "yaml-env-defaults";
 
 /**
@@ -48,6 +48,11 @@ export class Config implements IConfig {
     public contracts: ContractConfig;
 
     /**
+     * Authorization
+     */
+    public authorization: AuthorizationConfig;
+
+    /**
      * Constructor
      */
     constructor() {
@@ -57,6 +62,7 @@ export class Config implements IConfig {
         this.scheduler = new SchedulerConfig();
         this.database = new DatabaseConfig();
         this.contracts = new ContractConfig();
+        this.authorization = new AuthorizationConfig();
     }
 
     /**
@@ -105,6 +111,7 @@ export class Config implements IConfig {
         this.scheduler.readFromObject(cfg.scheduler);
         this.database.readFromObject(cfg.database);
         this.contracts.readFromObject(cfg.contracts);
+        this.authorization.readFromObject(cfg.authorization);
     }
 }
 
@@ -437,6 +444,11 @@ export interface IConfig {
      * Contracts
      */
     contracts: IContractsConfig;
+
+    /**
+     * Database
+     */
+    authorization: IAuthorizationConfig;
 }
 
 export interface IDatabaseConfig {
@@ -488,5 +500,31 @@ export class ContractConfig implements IContractsConfig {
         return {
             rollup_address: "0x0000000000000000000000000000000000000000",
         } as IContractsConfig;
+    }
+}
+
+export interface IAuthorizationConfig {
+    api_access_token: string;
+}
+export class AuthorizationConfig implements IAuthorizationConfig {
+    public api_access_token: string;
+
+    /**
+     * Constructor
+     */
+    constructor() {
+        const defaults = AuthorizationConfig.defaultValue();
+        this.api_access_token = defaults.api_access_token;
+    }
+    public readFromObject(config: IAuthorizationConfig) {
+        if (config.api_access_token !== undefined) this.api_access_token = config.api_access_token;
+    }
+    /**
+     * Returns default value
+     */
+    public static defaultValue(): IAuthorizationConfig {
+        return {
+            api_access_token: "9812176e565a007a84c5d2fc4cf842b12eb26dbc7568b4e40fc4f2418f2c8f54",
+        } as unknown as IAuthorizationConfig;
     }
 }
