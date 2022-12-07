@@ -34,3 +34,6 @@ scheduler:
 
 database:
   path: ":memory:"
+
+contracts:
+  rollup_address: "0x0000000000000000000000000000000000000000"

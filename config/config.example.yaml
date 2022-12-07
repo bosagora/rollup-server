@@ -34,3 +34,6 @@ scheduler:
 
 database:
   path: ${DB_PATH}
+
+contracts:
+  rollup_address: ${ROLLUP_ADDRESS}
