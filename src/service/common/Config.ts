@@ -43,6 +43,11 @@ export class Config implements IConfig {
     public database: DatabaseConfig;
 
     /**
+     * Contracts
+     */
+    public contracts: ContractConfig;
+
+    /**
      * Constructor
      */
     constructor() {
@@ -51,6 +56,7 @@ export class Config implements IConfig {
         this.node = new NodeConfig();
         this.scheduler = new SchedulerConfig();
         this.database = new DatabaseConfig();
+        this.contracts = new ContractConfig();
     }
 
     /**
@@ -98,6 +104,7 @@ export class Config implements IConfig {
         this.node.readFromObject(cfg.node);
         this.scheduler.readFromObject(cfg.scheduler);
         this.database.readFromObject(cfg.database);
+        this.contracts.readFromObject(cfg.contracts);
     }
 }
 
@@ -191,7 +198,7 @@ export class SchedulerConfig implements ISchedulerConfig {
             enable: false,
             items: [
                 {
-                    name: "bridge",
+                    name: "node",
                     enable: false,
                     interval: 1,
                 },
@@ -425,6 +432,11 @@ export interface IConfig {
      * Database
      */
     database: IDatabaseConfig;
+
+    /**
+     * Contracts
+     */
+    contracts: IContractsConfig;
 }
 
 export interface IDatabaseConfig {
@@ -450,5 +462,31 @@ export class DatabaseConfig implements IDatabaseConfig {
         return {
             path: "./db/rollup.db",
         } as unknown as IDatabaseConfig;
+    }
+}
+
+export interface IContractsConfig {
+    rollup_address: string;
+}
+export class ContractConfig implements IContractsConfig {
+    public rollup_address: string;
+
+    /**
+     * Constructor
+     */
+    constructor() {
+        const defaults = ContractConfig.defaultValue();
+        this.rollup_address = defaults.rollup_address;
+    }
+    public readFromObject(config: IContractsConfig) {
+        if (config.rollup_address !== undefined) this.rollup_address = config.rollup_address;
+    }
+    /**
+     * Returns default value
+     */
+    public static defaultValue(): IContractsConfig {
+        return {
+            rollup_address: "0x0000000000000000000000000000000000000000",
+        } as IContractsConfig;
     }
 }

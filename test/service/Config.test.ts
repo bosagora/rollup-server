@@ -26,5 +26,7 @@ describe("Test of Config", () => {
         assert.strictEqual(config.node.ipfs_test, true);
 
         assert.strictEqual(config.database.path, ":memory:");
+
+        assert.strictEqual(config.contracts.rollup_address, "0x0000000000000000000000000000000000000000");
     });
 });
