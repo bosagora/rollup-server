@@ -18,6 +18,7 @@ import { Config } from "../common/Config";
 import { logger } from "../common/Logger";
 import { RollUp } from "../../../typechain-types";
 import { Block } from "rollup-pm-sdk";
+import { uint64max } from "../common/Utils";
 import { GasPriceManager } from "../contract/GasPriceManager";
 import { RollupStorage } from "../storage/RollupStorage";
 
@@ -32,9 +33,9 @@ export class SendBlock extends Scheduler {
 
     private _provider: any;
 
-    uint64max = 18446744073709551615n;
-
-    rollup_artifact = JSON.parse(fs.readFileSync("./artifacts/contracts/RollUp.sol/RollUp.json", "utf8"));
+    private readonly rollup_artifact = JSON.parse(
+        fs.readFileSync("./artifacts/contracts/RollUp.sol/RollUp.json", "utf8")
+    );
 
     constructor(interval: number = 14) {
         // interval second
@@ -122,7 +123,7 @@ export class SendBlock extends Scheduler {
 
             let data: any = null;
             // Genesis Block
-            if (last_height === this.uint64max && db_last_height >= 0) {
+            if (last_height === uint64max && db_last_height >= 0) {
                 data = await this.storage.selectBlockByHeight(0);
             } else if (db_last_height > last_height) {
                 data = await this.storage.selectBlockByHeight(Number(last_height + 1n));
