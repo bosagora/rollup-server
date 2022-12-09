@@ -14,6 +14,7 @@ import { waffle } from "hardhat";
 import { Block, Hash, Transaction, Utils } from "rollup-pm-sdk";
 import { Config } from "../../src/service/common/Config";
 import { IBlockExternalizer, Node } from "../../src/service/scheduler/Node";
+import { HardhatUtils } from "../../src/service/utils";
 import { delay } from "../Utility";
 
 import * as assert from "assert";
@@ -41,6 +42,10 @@ describe("Test of Node", function () {
     config.readFromFile(path.resolve(process.cwd(), "config/config_test.yaml"));
     const manager = new Wallet(config.contracts.rollup_manager_key || "");
     const signer = provider.getSigner(manager.address);
+
+    before("Deploy Rollup Contract", async () => {
+        await HardhatUtils.deployRollupContract(config, manager);
+    });
 
     before("Create Node", async () => {
         storage = await (() => {

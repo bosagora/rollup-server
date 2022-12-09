@@ -4,11 +4,13 @@ import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
 
 import * as assert from "assert";
+import { Wallet } from "ethers";
 import * as path from "path";
 import { Transaction } from "rollup-pm-sdk";
 import { URL } from "url";
 import { RollupServer } from "../../src/service/RollupServer";
 import { DBTransaction, RollupStorage } from "../../src/service/storage/RollupStorage";
+import { HardhatUtils } from "../../src/service/utils";
 
 chai.use(chaiHttp);
 
@@ -20,6 +22,10 @@ describe("Test of Rollup Router", () => {
 
     before("Create Test SwapServer", async () => {
         config.readFromFile(path.resolve("config", "config_test.yaml"));
+
+        const manager = new Wallet(config.contracts.rollup_manager_key || "");
+        await HardhatUtils.deployRollupContract(config, manager);
+
         serverURL = new URL(`http://127.0.0.1:${config.server.port}`).toString();
         storage = await (() => {
             return new Promise<RollupStorage>((resolve, reject) => {
