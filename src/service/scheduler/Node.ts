@@ -154,9 +154,17 @@ export class Node extends Scheduler {
                     }
 
                     if (success) {
+                        try {
+                            // Save block info to the database
+                            await this.storage.insertBlock(block, cid);
+                        } catch {
+                            success = false;
+                        }
+                    }
+
+                    if (success) {
                         this.prev_hash = hashFull(block.header);
                         this.prev_height = block.header.height;
-                        await this.storage.insertBlock(block, cid);
                         await this.pool.remove(txs);
                         if (this.externalizer !== undefined) this.externalizer.externalize(block, cid);
                     }
