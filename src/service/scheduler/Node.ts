@@ -141,7 +141,7 @@ export class Node extends Scheduler {
                         }
                     }
 
-                    let block = Block.createBlock(this.prev_hash, this.prev_height, txList);
+                    const block = Block.createBlock(this.prev_hash, this.prev_height, txList);
 
                     let cid: string = "";
                     let success: boolean = true;

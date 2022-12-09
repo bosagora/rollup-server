@@ -481,6 +481,7 @@ export interface IContractsConfig {
     rollup_manager_key: string;
     rollup_address: string;
 }
+
 export class ContractConfig implements IContractsConfig {
     public rollup_manager_key: string;
     public rollup_address: string;
@@ -504,7 +505,7 @@ export class ContractConfig implements IContractsConfig {
         return {
             rollup_manager_key: "0x94bf5604b9eb7990985dfabbfd1298a16a3c94cb79a5fa39638279ba9ca48a80",
             rollup_address: "0x0000000000000000000000000000000000000000",
-        } as IContractsConfig;
+        };
     }
 }
 

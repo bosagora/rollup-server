@@ -1,6 +1,6 @@
 export const dropTablesQuery = `
-    DROP TABLE IF EXISTS blocks;    
-    DROP TABLE IF EXISTS tx;    
+    DROP TABLE IF EXISTS blocks;
+    DROP TABLE IF EXISTS tx;
 `;
 
 export const createTablesQuery = `

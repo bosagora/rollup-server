@@ -18,7 +18,6 @@ import { logger } from "../common/Logger";
 import { TransactionPool } from "../scheduler/TransactionPool";
 import { DBTransaction } from "../storage/RollupStorage";
 import { Validation } from "../validation";
-import { token } from "../../../typechain-types/@openzeppelin/contracts";
 
 export class RollupRouter {
     /**

@@ -11,7 +11,7 @@
 import { BigNumber, Wallet } from "ethers";
 import { ethers, waffle } from "hardhat";
 
-import { Block, Hash, hashFull, Transaction, Utils } from "rollup-pm-sdk";
+import { Block, Hash, hashFull } from "rollup-pm-sdk";
 import { Config } from "../../src/service/common/Config";
 import { SendBlock } from "../../src/service/scheduler/SendBlock";
 import { RollUp } from "../../typechain-types";
@@ -21,7 +21,7 @@ import * as assert from "assert";
 import path from "path";
 import { RollupStorage } from "../../src/service/storage/RollupStorage";
 
-describe("Test of SendBlock", function () {
+describe("Test of SendBlock", () => {
     let sendBlock: SendBlock;
     let rollUp: RollUp;
     const config = new Config();
@@ -39,7 +39,7 @@ describe("Test of SendBlock", function () {
         config.contracts.rollup_address = rollUp.address;
     });
 
-    after(function () {
+    after(() => {
         sendBlock.stop();
     });
 
