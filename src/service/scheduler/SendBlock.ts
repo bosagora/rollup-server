@@ -20,21 +20,47 @@ import { uint64max } from "../common/Utils";
 import { GasPriceManager } from "../contract/GasPriceManager";
 import { RollupStorage } from "../storage/RollupStorage";
 
+/**
+ * Store the headers of blocks in a smart contract at regular intervals.
+ * The header of the block is created by the class Node and stored in the database.
+ */
 export class SendBlock extends Scheduler {
-    public _config: Config | undefined;
+    /**
+     * The object containing the settings required to run
+     */
+    private _config: Config | undefined;
 
+    /**
+     * The object needed to access the database
+     */
     private _storage: RollupStorage | undefined;
 
+    /**
+     * The contract object needed to save the block information
+     */
     private _rollup: RollUp | undefined;
 
+    /**
+     * The signer needed to save the block information
+     */
     private _managerSigner: NonceManager | undefined;
 
+    /**
+     * The web3 provider needed to save the block information
+     */
     private _provider: any;
 
+    /**
+     * The contract's ABI needed to save the block information
+     */
     private readonly rollup_artifact = JSON.parse(
         fs.readFileSync("./artifacts/contracts/RollUp.sol/RollUp.json", "utf8")
     );
 
+    /**
+     * Constructor
+     * @param interval
+     */
     constructor(interval: number = 14) {
         // interval second
         super(interval);
@@ -42,7 +68,8 @@ export class SendBlock extends Scheduler {
     }
 
     /**
-     * 설정
+     * Returns the value if this._config is defined.
+     * Otherwise, exit the process.
      */
     private get config(): Config {
         if (this._config !== undefined) return this._config;
@@ -52,6 +79,10 @@ export class SendBlock extends Scheduler {
         }
     }
 
+    /**
+     * Returns the value if this._managerSigner is defined.
+     * Otherwise, exit the process.
+     */
     private get managerSigner(): NonceManager {
         if (this._managerSigner !== undefined) return this._managerSigner;
         else {
@@ -60,6 +91,10 @@ export class SendBlock extends Scheduler {
         }
     }
 
+    /**
+     * Returns the value if this._storage is defined.
+     * Otherwise, exit the process.
+     */
     private get storage(): RollupStorage {
         if (this._storage !== undefined) return this._storage;
         else {
@@ -69,8 +104,8 @@ export class SendBlock extends Scheduler {
     }
 
     /**
-     * 실행에 필요한 여러 객체를 설정한다
-     * @param options 옵션
+     * Set up multiple objects for execution
+     * @param options objects for execution
      */
     public setOption(options: any) {
         if (options) {

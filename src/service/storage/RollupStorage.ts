@@ -1,3 +1,13 @@
+/**
+ *  The class that creates, inserts and reads the data into the database.
+ *
+ *  Copyright:
+ *      Copyright (c) 2022 BOSAGORA Foundation All rights reserved.
+ *
+ *  License:
+ *       MIT License. See LICENSE for details.
+ */
+
 import { plainToClass } from "class-transformer";
 import { Block, BlockHeader, Hash, hashFull, Transaction } from "rollup-pm-sdk";
 import { Storage } from "../../modules/storage/Storage";

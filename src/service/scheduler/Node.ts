@@ -1,5 +1,5 @@
 /**
- *  The class that defines the block.
+ *  Contains classes that define the scheduler that creates blocks
  *
  *  Copyright:
  *      Copyright (c) 2022 BOSAGORA Foundation All rights reserved.
@@ -16,25 +16,56 @@ import { TransactionPool } from "./TransactionPool";
 import { Block, Hash, hashFull, Transaction, Utils } from "rollup-pm-sdk";
 import { DBTransaction, RollupStorage } from "../storage/RollupStorage";
 
+/**
+ * Definition of event type
+ */
 export interface IBlockExternalizer {
     externalize(block: Block, cid: string): void;
 }
 
+/**
+ * Creates blocks at regular intervals and stores them in IPFS and databases.
+ */
 export class Node extends Scheduler {
-    public _config: Config | undefined;
+    /**
+     * The object containing the settings required to run
+     */
+    private _config: Config | undefined;
 
-    public externalizer: IBlockExternalizer | undefined;
-
-    private _pool: TransactionPool | undefined;
-    private prev_hash: Hash;
-    private prev_height: bigint;
-
-    private old_time_stamp: number;
-    private new_time_stamp: number;
-
+    /**
+     * The object needed to store data in IPFS
+     */
     private _ipfs: IPFSManager | undefined;
 
+    /**
+     * The object needed to access the database
+     */
     private _storage: RollupStorage | undefined;
+
+    /**
+     * The object needed to temporarily store transactions.
+     */
+    private _pool: TransactionPool | undefined;
+
+    /**
+     * Registered Event Handler
+     */
+    public externalizer: IBlockExternalizer | undefined;
+
+    /**
+     * Hash of previously created blocks
+     */
+    private prev_hash: Hash;
+
+    /**
+     * Height of previously created blocks
+     */
+    private prev_height: bigint;
+
+    /**
+     * This is the timestamp when the previous block was created
+     */
+    private old_time_stamp: number;
 
     constructor(interval: number = 1) {
         super(interval);
@@ -43,13 +74,11 @@ export class Node extends Scheduler {
         this.prev_height = -1n;
 
         this.old_time_stamp = Utils.getTimeStamp();
-        this.new_time_stamp = this.old_time_stamp;
-
-        this.externalizer = undefined;
     }
 
     /**
-     * 설정
+     * Returns the value if this._config is defined.
+     * Otherwise, exit the process.
      */
     private get config(): Config {
         if (this._config !== undefined) return this._config;
@@ -59,6 +88,10 @@ export class Node extends Scheduler {
         }
     }
 
+    /**
+     * Returns the value if this._ipfs is defined.
+     * Otherwise, exit the process.
+     */
     private get ipfs(): IPFSManager {
         if (this._ipfs !== undefined) return this._ipfs;
         else {
@@ -67,6 +100,10 @@ export class Node extends Scheduler {
         }
     }
 
+    /**
+     * Returns the value if this._storage is defined.
+     * Otherwise, exit the process.
+     */
     private get storage(): RollupStorage {
         if (this._storage !== undefined) return this._storage;
         else {
@@ -75,6 +112,10 @@ export class Node extends Scheduler {
         }
     }
 
+    /**
+     * Returns the value if this._pool is defined.
+     * Otherwise, exit the process.
+     */
     private get pool(): TransactionPool {
         if (this._pool !== undefined) return this._pool;
         else {
@@ -84,8 +125,8 @@ export class Node extends Scheduler {
     }
 
     /**
-     * 실행에 필요한 여러 객체를 설정한다
-     * @param options 옵션
+     * Set up multiple objects for execution
+     * @param options objects for execution
      */
     public setOption(options: any) {
         if (options) {
@@ -103,31 +144,43 @@ export class Node extends Scheduler {
         }
     }
 
+    /**
+     * Set the event handler.
+     * @param value
+     */
     public setExternalizer(value: IBlockExternalizer) {
         this.externalizer = value;
     }
 
+    /**
+     * Add a received transaction
+     * @param tx received transaction
+     */
     public async receive(tx: Transaction) {
         await this.pool.add(DBTransaction.make(tx));
     }
 
     /**
-     * 실제 작업
+     * This function is repeatedly executed by the scheduler.
      * @protected
      */
     protected override async work() {
-        this.new_time_stamp = Utils.getTimeStamp();
+        const new_time_stamp = Utils.getTimeStamp();
         try {
             const old_period = Math.floor(this.old_time_stamp / this.config.node.interval);
-            const new_period = Math.floor(this.new_time_stamp / this.config.node.interval);
+            const new_period = Math.floor(new_time_stamp / this.config.node.interval);
+
             if (old_period !== new_period) {
-                this.old_time_stamp = this.new_time_stamp;
+                this.old_time_stamp = new_time_stamp;
                 const txs = await this.pool.get(this.config.node.max_txs);
 
+                // 트랜잭션이 존재하면
                 if (txs.length > 0) {
                     const txList = DBTransaction.converterTxArray(txs);
 
+                    // 이전에 생성된 블록의 높이가 설정되지 않으면
                     if (this.prev_height === -1n) {
+                        // 데이타베이스에 저장된 블록의 높이를 가지고 온다.
                         const db_last_height = await this.storage.selectLastHeight();
                         if (db_last_height !== null) {
                             const db_block = await this.storage.selectBlockByHeight(db_last_height);

@@ -36,9 +36,11 @@ export class RollupServer extends WebService {
     private readonly storage: RollupStorage;
 
     public readonly pool: TransactionPool;
+
     /**
      * Constructor
      * @param config Configuration
+     * @param storage Rollup Storage
      * @param schedules Array of IScheduler
      */
     constructor(config: Config, storage: RollupStorage, schedules?: IScheduler[]) {
