@@ -1,3 +1,13 @@
+/**
+ *  The Schema of Rollup Storage
+ *
+ *  Copyright:
+ *      Copyright (c) 2022 BOSAGORA Foundation All rights reserved.
+ *
+ *  License:
+ *       MIT License. See LICENSE for details.
+ */
+
 export const dropTablesQuery = `
     DROP TABLE IF EXISTS blocks;
     DROP TABLE IF EXISTS tx;

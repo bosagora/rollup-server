@@ -1,5 +1,5 @@
 /**
- *  The router of Wallet
+ *  The router of Rollup Server
  *
  *  Copyright:
  *      Copyright (c) 2022 BOSAGORA Foundation All rights reserved.

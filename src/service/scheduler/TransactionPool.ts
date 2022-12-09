@@ -12,8 +12,15 @@ import { logger } from "../common/Logger";
 import { DBTransaction, RollupStorage } from "../storage/RollupStorage";
 
 export class TransactionPool {
+    /**
+     * The object needed to access the database
+     */
     private _storage: RollupStorage | undefined;
 
+    /**
+     * Returns the value if this._storage is defined.
+     * Otherwise, exit the process.
+     */
     get storage(): RollupStorage {
         if (this._storage !== undefined) return this._storage;
         else {

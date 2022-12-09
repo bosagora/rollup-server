@@ -1,8 +1,21 @@
+/**
+ *  The superclass of storages.
+ *
+ *  Copyright:
+ *      Copyright (c) 2022 BOSAGORA Foundation All rights reserved.
+ *
+ *  License:
+ *       MIT License. See LICENSE for details.
+ */
+
 import mkdirp from "mkdirp";
 import path from "path";
 import sqlite3, { Database } from "sqlite3";
 import { IDatabaseConfig } from "../../service/common/Config";
 
+/**
+ * The superclass of storages.
+ */
 export class Storage {
     protected database: Database;
 
