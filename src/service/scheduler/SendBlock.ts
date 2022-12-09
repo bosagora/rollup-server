@@ -29,7 +29,7 @@ export class SendBlock extends Scheduler {
 
     private _rollup: RollUp | undefined;
 
-    private _adminSigner: NonceManager | undefined;
+    private _managerSigner: NonceManager | undefined;
 
     private _provider: any;
 
@@ -54,10 +54,10 @@ export class SendBlock extends Scheduler {
         }
     }
 
-    private get adminSigner(): NonceManager {
-        if (this._adminSigner !== undefined) return this._adminSigner;
+    private get managerSigner(): NonceManager {
+        if (this._managerSigner !== undefined) return this._managerSigner;
         else {
-            logger.error("AdminSigner is not ready yet.");
+            logger.error("ManagerSigner is not ready yet.");
             process.exit(1);
         }
     }
@@ -89,10 +89,9 @@ export class SendBlock extends Scheduler {
      */
     protected override async work() {
         try {
-            let success: boolean = false; // 0:Fail 1:Seccess
             if (this._rollup === undefined) {
                 const manager = new Wallet(this.config.contracts.rollup_manager_key || "");
-                this._adminSigner = new NonceManager(new GasPriceManager(this._provider.getSigner(manager.address)));
+                this._managerSigner = new NonceManager(new GasPriceManager(this._provider.getSigner(manager.address)));
                 this._rollup = new ethers.Contract(
                     this.config.contracts.rollup_address,
                     this.rollup_artifact.abi,
@@ -100,9 +99,7 @@ export class SendBlock extends Scheduler {
                 ) as RollUp;
             }
 
-            const last_height: bigint = BigInt(
-                BigNumber.from(await this._rollup.connect(this.adminSigner).getLastHeight()).toString()
-            );
+            const last_height: bigint = BigInt((await this._rollup.getLastHeight()).toString());
             const db_last_height = await this.storage.selectLastHeight();
 
             if (last_height === undefined) {
@@ -131,11 +128,10 @@ export class SendBlock extends Scheduler {
 
             if (data) {
                 await this._rollup
-                    .connect(this.adminSigner)
+                    .connect(this.managerSigner)
                     .add(data.height, data.cur_block, data.prev_block, data.merkle_root, data.timestamp, data.CID)
                     .then(() => {
                         logger.info(`Successful in adding blocks to the blockchain. Height: ${data.height}`);
-                        success = true;
                     });
             } else {
                 logger.info(`This block is not ready.`);

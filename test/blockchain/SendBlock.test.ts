@@ -9,7 +9,6 @@
  */
 
 import { BigNumber, Wallet } from "ethers";
-import * as hre from "hardhat";
 import { ethers, waffle } from "hardhat";
 
 import { Block, Hash, hashFull, Transaction, Utils } from "rollup-pm-sdk";

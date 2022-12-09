@@ -8,7 +8,8 @@
  *       MIT License. See LICENSE for details.
  */
 
-import * as ethers from "ethers";
+import { Wallet } from "ethers";
+import { waffle } from "hardhat";
 
 import { Block, Hash, Transaction, Utils } from "rollup-pm-sdk";
 import { Config } from "../../src/service/common/Config";
@@ -36,10 +37,12 @@ describe("Test of Node", function () {
     let externalizer: BlockExternalizer;
     const config = new Config();
     let storage: RollupStorage;
-    const signer = new ethers.Wallet("0xf6dda8e03f9dce37c081e5d178c1fda2ebdb90b5b099de1a555a658270d8c47d");
+    const provider = waffle.provider;
+    config.readFromFile(path.resolve(process.cwd(), "config/config_test.yaml"));
+    const manager = new Wallet(config.contracts.rollup_manager_key || "");
+    const signer = provider.getSigner(manager.address);
 
     before("Create Node", async () => {
-        config.readFromFile(path.resolve(process.cwd(), "config/config_test.yaml"));
         storage = await (() => {
             return new Promise<RollupStorage>((resolve, reject) => {
                 const res = new RollupStorage(config.database, (err) => {
