@@ -1,5 +1,5 @@
 import { plainToClass } from "class-transformer";
-import { Block, hashFull, Hash, Transaction, BlockHeader } from "rollup-pm-sdk";
+import { Block, BlockHeader, Hash, hashFull, Transaction } from "rollup-pm-sdk";
 import { Storage } from "../../modules/storage/Storage";
 import { IDatabaseConfig } from "../common/Config";
 import {

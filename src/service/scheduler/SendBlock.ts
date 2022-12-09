@@ -9,15 +9,13 @@
  */
 
 import { NonceManager } from "@ethersproject/experimental";
-import { BigNumber, Wallet } from "ethers";
-import express from "express";
+import { Wallet } from "ethers";
 import fs from "fs";
 import { ethers } from "hardhat";
+import { RollUp } from "../../../typechain-types";
 import { Scheduler } from "../../modules";
 import { Config } from "../common/Config";
 import { logger } from "../common/Logger";
-import { RollUp } from "../../../typechain-types";
-import { Block } from "rollup-pm-sdk";
 import { uint64max } from "../common/Utils";
 import { GasPriceManager } from "../contract/GasPriceManager";
 import { RollupStorage } from "../storage/RollupStorage";
