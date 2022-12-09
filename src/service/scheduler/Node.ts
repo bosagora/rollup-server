@@ -8,7 +8,6 @@
  *       MIT License. See LICENSE for details.
  */
 
-import fs from "fs";
 import { IPFSManager, Scheduler } from "../../modules";
 import { Config } from "../common/Config";
 import { logger } from "../common/Logger";
@@ -36,10 +35,6 @@ export class Node extends Scheduler {
     private _ipfs: IPFSManager | undefined;
 
     private _storage: RollupStorage | undefined;
-
-    private readonly rollup_artifact = JSON.parse(
-        fs.readFileSync("./artifacts/contracts/RollUp.sol/RollUp.json", "utf8")
-    );
 
     constructor(interval: number = 1) {
         super(interval);
