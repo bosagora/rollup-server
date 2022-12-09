@@ -22,7 +22,7 @@ export const createTablesQuery = `
     "timestamp" INTEGER,
     CID TEXT
   );
-  CREATE INDEX curBlockHashIndex on blocks (cur_block);
+  CREATE INDEX IF NOT EXISTS curBlockHashIndex on blocks (cur_block);
 
   CREATE TABLE IF NOT EXISTS tx(
     tx_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -37,7 +37,7 @@ export const createTablesQuery = `
     signature TEXT,
     hash TEXT
   );
-  CREATE INDEX txHashIndex on tx (hash);
+  CREATE INDEX IF NOT EXISTS txHashIndex on tx (hash);
 `;
 
 export const insertBlockQuery = `
