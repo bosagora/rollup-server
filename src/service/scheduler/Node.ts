@@ -8,16 +8,10 @@
  *       MIT License. See LICENSE for details.
  */
 
-import { NonceManager } from "@ethersproject/experimental";
-import { BigNumber, Wallet } from "ethers";
 import fs from "fs";
-import { ethers } from "hardhat";
-import { RollUp } from "../../../typechain-types";
 import { IPFSManager, Scheduler } from "../../modules";
 import { Config } from "../common/Config";
 import { logger } from "../common/Logger";
-import { uint64max } from "../common/Utils";
-import { GasPriceManager } from "../contract/GasPriceManager";
 import { TransactionPool } from "./TransactionPool";
 
 import { Block, Hash, hashFull, Transaction, Utils } from "rollup-pm-sdk";
@@ -43,12 +37,6 @@ export class Node extends Scheduler {
 
     private _storage: RollupStorage | undefined;
 
-    private _rollup: RollUp | undefined;
-
-    private _adminSigner: NonceManager | undefined;
-
-    private _provider: any;
-
     private readonly rollup_artifact = JSON.parse(
         fs.readFileSync("./artifacts/contracts/RollUp.sol/RollUp.json", "utf8")
     );
@@ -63,7 +51,6 @@ export class Node extends Scheduler {
         this.new_time_stamp = this.old_time_stamp;
 
         this.externalizer = undefined;
-        this._provider = ethers.provider;
     }
 
     /**
@@ -129,21 +116,6 @@ export class Node extends Scheduler {
         await this.pool.add(DBTransaction.make(tx));
     }
 
-    private async lastHeight(): Promise<bigint> {
-        if (this._rollup === undefined) {
-            const manager = new Wallet(this.config.contracts.rollup_manager_key || "");
-            this._adminSigner = new NonceManager(new GasPriceManager(this._provider.getSigner(manager.address)));
-            this._rollup = new ethers.Contract(
-                this.config.contracts.rollup_address,
-                this.rollup_artifact.abi,
-                this._provider
-            ) as RollUp;
-        } else {
-            return uint64max;
-        }
-        return BigInt(BigNumber.from(await this._rollup.connect(this.adminSigner).getLastHeight()).toString());
-    }
-
     /**
      * 실제 작업
      * @protected
@@ -161,9 +133,11 @@ export class Node extends Scheduler {
                     const txList = DBTransaction.converterTxArray(txs);
 
                     if (this.prev_height === -1n) {
-                        const sc_last_height = await this.lastHeight();
-                        if (sc_last_height !== uint64max) {
-                            this.prev_height = sc_last_height;
+                        const db_last_height = await this.storage.selectLastHeight();
+                        if (db_last_height !== null) {
+                            const db_block = await this.storage.selectBlockByHeight(db_last_height);
+                            this.prev_height = BigInt(db_block.height);
+                            this.prev_hash = new Hash(db_block.prev_hash);
                         }
                     }
 
@@ -185,7 +159,6 @@ export class Node extends Scheduler {
                         await this.storage.insertBlock(block, cid);
                         await this.pool.remove(txs);
                         if (this.externalizer !== undefined) this.externalizer.externalize(block, cid);
-                        // TODO  Save Smart Contract
                     }
                 }
             }
