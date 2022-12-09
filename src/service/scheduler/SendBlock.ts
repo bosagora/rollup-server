@@ -10,7 +10,6 @@
 
 import { NonceManager } from "@ethersproject/experimental";
 import { Wallet } from "ethers";
-import fs from "fs";
 import { ethers } from "hardhat";
 import { RollUp } from "../../../typechain-types";
 import { Scheduler } from "../../modules";
@@ -46,25 +45,12 @@ export class SendBlock extends Scheduler {
     private _managerSigner: NonceManager | undefined;
 
     /**
-     * The web3 provider needed to save the block information
-     */
-    private _provider: any;
-
-    /**
-     * The contract's ABI needed to save the block information
-     */
-    private readonly rollup_artifact = JSON.parse(
-        fs.readFileSync("./artifacts/contracts/RollUp.sol/RollUp.json", "utf8")
-    );
-
-    /**
      * Constructor
      * @param interval
      */
     constructor(interval: number = 14) {
         // interval second
         super(interval);
-        this._provider = ethers.provider;
     }
 
     /**
@@ -124,12 +110,10 @@ export class SendBlock extends Scheduler {
         try {
             if (this._rollup === undefined) {
                 const manager = new Wallet(this.config.contracts.rollup_manager_key || "");
-                this._managerSigner = new NonceManager(new GasPriceManager(this._provider.getSigner(manager.address)));
-                this._rollup = new ethers.Contract(
-                    this.config.contracts.rollup_address,
-                    this.rollup_artifact.abi,
-                    this._provider
-                ) as RollUp;
+                this._managerSigner = new NonceManager(new GasPriceManager(ethers.provider.getSigner(manager.address)));
+
+                const contractFactory = await ethers.getContractFactory("RollUp");
+                this._rollup = contractFactory.attach(this.config.contracts.rollup_address) as RollUp;
             }
 
             const last_height: bigint = BigInt((await this._rollup.getLastHeight()).toString());
