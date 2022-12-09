@@ -14,6 +14,7 @@ import { ethers, waffle } from "hardhat";
 import { Block, Hash, hashFull } from "rollup-pm-sdk";
 import { Config } from "../../src/service/common/Config";
 import { SendBlock } from "../../src/service/scheduler/SendBlock";
+import { HardhatUtils } from "../../src/service/utils";
 import { RollUp } from "../../typechain-types";
 import { delay } from "../Utility";
 
@@ -32,11 +33,8 @@ describe("Test of SendBlock", () => {
     const admin = new Wallet(config.contracts.rollup_manager_key || "");
     const admin_signer = provider.getSigner(admin.address);
 
-    before(async () => {
-        const RollUpFactory = await ethers.getContractFactory("RollUp");
-        rollUp = (await RollUpFactory.connect(admin_signer).deploy()) as RollUp;
-        await rollUp.deployed();
-        config.contracts.rollup_address = rollUp.address;
+    before("Deploy Rollup Contract", async () => {
+        rollUp = await HardhatUtils.deployRollupContract(config, admin);
     });
 
     after(() => {
