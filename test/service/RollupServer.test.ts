@@ -100,6 +100,7 @@ describe("Test of Rollup Server", function () {
 
         for (let idx = 0; idx < count; idx++) {
             const tx = new Transaction(
+                numTx,
                 "TX" + numTx.toString().padStart(10, "0"),
                 signer.address,
                 "0",
