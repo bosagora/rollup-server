@@ -14,6 +14,7 @@ import { Storage } from "../../modules/storage/Storage";
 import { IDatabaseConfig } from "../common/Config";
 import {
     createTablesQuery,
+    deleteBlockByHeightQuery,
     deleteTxByHashQuery,
     insertBlockQuery,
     insertTxQuery,
@@ -69,6 +70,19 @@ export class RollupStorage extends Storage {
                     else resolve(true);
                 }
             );
+        });
+    }
+
+    /**
+     * Deletes blocks with a block height less than the input value
+     * @param height
+     */
+    public deleteBlockByHeight(height: bigint): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.database.run(deleteBlockByHeightQuery, [height.toString()], (err: Error | null) => {
+                if (err) reject(err);
+                else resolve();
+            });
         });
     }
 

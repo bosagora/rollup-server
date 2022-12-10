@@ -206,5 +206,16 @@ describe("Test of Rollup Server", function () {
             const last_height_contract = await contract.getLastHeight();
             assert.strictEqual(last_height_contract.toString(), "2");
         });
+
+        it("Check that the blocks stored in the contract have been deleted from the database", async () => {
+            const res0 = await storage.selectBlockByHeight(0n);
+            assert.strictEqual(res0, undefined);
+
+            const res1 = await storage.selectBlockByHeight(1n);
+            assert.strictEqual(res1, undefined);
+
+            const res2 = await storage.selectBlockByHeight(2n);
+            assert.notStrictEqual(res2, undefined);
+        });
     });
 });

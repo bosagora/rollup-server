@@ -78,6 +78,10 @@ export const selectBlockByHashQuery = `
     SELECT * FROM blocks WHERE cur_block = ?
 `;
 
+export const deleteBlockByHeightQuery = `
+    DELETE FROM blocks WHERE height < ?
+`;
+
 export const deleteTxByHashQuery = `
     DELETE FROM tx WHERE hash = ?
 `;
