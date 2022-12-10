@@ -15,6 +15,7 @@ import { IDatabaseConfig } from "../common/Config";
 import {
     createTablesQuery,
     deleteTxByHashQuery,
+    getSetting,
     insertBlockQuery,
     insertTxQuery,
     selectBlockByHeightQuery,
@@ -22,6 +23,7 @@ import {
     selectTxByHashQuery,
     selectTxByLengthQuery,
     selectTxsLength,
+    setSetting,
 } from "./schema/RollupSchema";
 
 export class RollupStorage extends Storage {
@@ -155,6 +157,57 @@ export class RollupStorage extends Storage {
                 if (err) reject(err);
                 else resolve(row[0]);
             });
+        });
+    }
+
+    /**
+     * Returns the settings stored in the database.
+     * @param key   Key to Settings
+     * @param defaultValue 기본값
+     */
+    public getSetting(key: string, defaultValue: string): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            this.database.all(getSetting, [key], (err: Error | null, row: any) => {
+                if (err) reject(err);
+                else resolve(row.length === 0 ? defaultValue : row[0].value);
+            });
+        });
+    }
+
+    /**
+     * Save the settings to the database
+     * @param key Key to Settings
+     * @param value Value to set
+     */
+    public setSetting(key: string, value: string): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this.database.all(setSetting, [key, value], (err: Error | null, row: any) => {
+                if (err) reject(err);
+                else resolve();
+            });
+        });
+    }
+
+    /**
+     * Return the last sequence received
+     */
+    public async getLastReceiveSequence(): Promise<number> {
+        return new Promise<number>((resolve, reject) => {
+            this.getSetting("last_receive_sequence", "-1")
+                .then((value) => resolve(Number(value)))
+                .catch((e) => reject(e));
+        });
+    }
+
+    /**
+     * Save the last received sequence as a database
+     * @param value Value to set
+     */
+    public async setLastReceiveSequence(value: number): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this.setSetting("last_receive_sequence", value.toString())
+                .then(() => resolve())
+                .catch((e) => reject(e));
         });
     }
 }

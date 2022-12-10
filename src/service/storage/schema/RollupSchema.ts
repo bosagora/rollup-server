@@ -38,6 +38,11 @@ export const createTablesQuery = `
     hash TEXT
   );
   CREATE INDEX IF NOT EXISTS txHashIndex on tx (hash);
+
+  CREATE TABLE IF NOT EXISTS setting(
+    "key" TEXT PRIMARY KEY,
+    "value" TEXT
+  );
 `;
 
 export const insertBlockQuery = `
@@ -93,4 +98,15 @@ export const selectTxByLengthQuery = `
 
 export const selectTxsLength = `
     SELECT COUNT(sequence) as count FROM tx
+`;
+
+export const getSetting = `
+    SELECT * FROM setting WHERE "key" = ?
+`;
+
+export const setSetting = `
+    INSERT OR REPLACE INTO setting
+        ( "key", "value" )
+    VALUES
+        ( ?, ? )
 `;

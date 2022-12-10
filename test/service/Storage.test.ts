@@ -36,7 +36,7 @@ describe("Test of Storage", () => {
         )
     );
 
-    it("Create storage", async () => {
+    before("Create storage", async () => {
         const config: Config = new Config();
         config.readFromFile(path.resolve(process.cwd(), "config/config_test.yaml"));
 
@@ -118,6 +118,30 @@ describe("Test of Storage", () => {
             assert.strictEqual(resS, null);
 
             assert.strictEqual(await storage.selectTxsLength(), 1);
+        });
+    });
+
+    context("Test of getSetting & setSetting", () => {
+        it("getSetting & default", async () => {
+            const res = await storage.getSetting("key1", "default");
+            assert.strictEqual(res, "default");
+        });
+
+        it("setSetting & getSetting", async () => {
+            await storage.setSetting("key1", "value1");
+            const res = await storage.getSetting("key1", "default");
+            assert.strictEqual(res, "value1");
+        });
+
+        it("getLastReceiveSequence & default", async () => {
+            const res = await storage.getLastReceiveSequence();
+            assert.strictEqual(res, -1);
+        });
+
+        it("setSetting & getSetting", async () => {
+            await storage.setLastReceiveSequence(45);
+            const res = await storage.getLastReceiveSequence();
+            assert.strictEqual(res, 45);
         });
     });
 });
