@@ -127,7 +127,8 @@ export class SendBlock extends Scheduler {
                 this._rollup = contractFactory.attach(this.config.contracts.rollup_address) as RollUp;
             }
 
-            const last_height: bigint = BigInt((await this._rollup.getLastHeight()).toString());
+            const last_height_org = await this._rollup.getLastHeight();
+            const last_height: bigint = BigInt(last_height_org.toString());
             const db_last_height = await this.storage.selectLastHeight();
 
             if (db_last_height === null) {
@@ -143,7 +144,7 @@ export class SendBlock extends Scheduler {
 
             let data: any = null;
             // Genesis Block
-            if (last_height === uint64max && db_last_height >= 0) {
+            if (last_height_org.toString() === uint64max && db_last_height >= 0) {
                 data = await this.storage.selectBlockByHeight(0n);
             } else if (db_last_height > last_height) {
                 data = await this.storage.selectBlockByHeight(last_height + 1n);
