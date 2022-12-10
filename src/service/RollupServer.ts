@@ -51,7 +51,7 @@ export class RollupServer extends WebService {
         this.pool = new TransactionPool();
         this.pool.storage = storage;
 
-        this.rollupRouter = new RollupRouter(this, config, this.pool);
+        this.rollupRouter = new RollupRouter(this, config, this.pool, this.storage);
 
         if (schedules) {
             schedules.forEach((m) => this.schedules.push(m));

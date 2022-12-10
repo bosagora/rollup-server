@@ -17,7 +17,7 @@ import { WebService } from "../../modules/service/WebService";
 import { Config } from "../common/Config";
 import { logger } from "../common/Logger";
 import { TransactionPool } from "../scheduler/TransactionPool";
-import { DBTransaction } from "../storage/RollupStorage";
+import { DBTransaction, RollupStorage } from "../storage/RollupStorage";
 import { Validation } from "../validation";
 
 export class RollupRouter {
@@ -40,21 +40,37 @@ export class RollupRouter {
     private readonly pool: TransactionPool;
 
     /**
+     * The storage instance
+     * @private
+     */
+    private readonly storage: RollupStorage;
+    /**
      * Authorization pass key
      * @private
      */
     private static api_access_token: string;
 
     /**
+     * Sequence of the last received transaction
+     * @private
+     */
+    private lastReceiveSequence: number;
+
+    /**
      *
      * @param service  WebService
      * @param config Configuration
+     * @param pool TransactionPool
+     * @param storage RollupStorage
      */
-    constructor(service: WebService, config: Config, pool: TransactionPool) {
+    constructor(service: WebService, config: Config, pool: TransactionPool, storage: RollupStorage) {
         this._web_service = service;
         this._config = config;
         this.pool = pool;
+        this.storage = storage;
+
         RollupRouter.api_access_token = config.authorization.api_access_token;
+        this.lastReceiveSequence = -1;
     }
 
     private get app(): express.Application {
@@ -230,7 +246,24 @@ export class RollupRouter {
                 );
             }
 
+            if (this.lastReceiveSequence === -1) {
+                this.lastReceiveSequence = await this.storage.getLastReceiveSequence();
+            }
+
+            if (this.lastReceiveSequence + 1 !== tx.sequence) {
+                return res.status(417).json(
+                    RollupRouter.makeResponseData(417, undefined, {
+                        param: "sequence",
+                        expected: this.lastReceiveSequence + 1,
+                        actual: tx.sequence,
+                        msg: "sequence is different from the expected value",
+                    })
+                );
+            }
+
             await this.pool.add(DBTransaction.make(tx));
+            await this.storage.setLastReceiveSequence(tx.sequence);
+            this.lastReceiveSequence = tx.sequence;
             return res.json(RollupRouter.makeResponseData(200, "SUCCESS"));
         } catch (error) {
             logger.error("POST /tx/record , " + error);

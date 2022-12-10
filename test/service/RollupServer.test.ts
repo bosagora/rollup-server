@@ -208,4 +208,35 @@ describe("Test of Rollup Server", function () {
             assert.strictEqual(last_height_contract.toString(), "2");
         });
     });
+
+    // The sequence of transactions received should be increased by 1.
+    // If a value different from the expected sequence is received, response code 417 is returned
+    context("Step 4 - Receive sequential transactions", () => {
+        let tx1: Transaction;
+        let tx2: Transaction;
+
+        before("Create Transactions", async () => {
+            tx1 = (await makeMultiTransactions(1))[0];
+            tx2 = (await makeMultiTransactions(1))[0];
+        });
+
+        it("Unexpected sequence", async () => {
+            const res = await client.post(sendURL, tx2.toJSON());
+            assert.strictEqual(res.data.code, 417);
+            assert.strictEqual(res.data.data, undefined);
+            assert.strictEqual(res.data.error.msg, "sequence is different from the expected value");
+        });
+
+        it("Expected sequence 1", async () => {
+            const res = await client.post(sendURL, tx1.toJSON());
+            assert.strictEqual(res.data.code, 200);
+            assert.strictEqual(res.data.data, "SUCCESS");
+        });
+
+        it("Expected sequence 2", async () => {
+            const res = await client.post(sendURL, tx2.toJSON());
+            assert.strictEqual(res.data.code, 200);
+            assert.strictEqual(res.data.data, "SUCCESS");
+        });
+    });
 });
