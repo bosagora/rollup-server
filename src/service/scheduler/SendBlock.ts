@@ -144,7 +144,7 @@ export class SendBlock extends Scheduler {
 
             let data: any = null;
             // Genesis Block
-            if (last_height_org.toString() === uint64max && db_last_height >= 0) {
+            if (last_height_org.toString() === uint64max && db_last_height >= 0n) {
                 data = await this.storage.selectBlockByHeight(0n);
             } else if (db_last_height > last_height) {
                 data = await this.storage.selectBlockByHeight(last_height + 1n);
@@ -164,6 +164,11 @@ export class SendBlock extends Scheduler {
                 }
             } else {
                 logger.info(`This block is not ready.`);
+            }
+
+            // Delete blocks stored in the contract from the database
+            if (last_height_org.toString() !== uint64max) {
+                await this.storage.deleteBlockByHeight(last_height);
             }
         } catch (error) {
             logger.error(`Failed to execute the Send Block: ${error}`);
