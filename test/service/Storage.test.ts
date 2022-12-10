@@ -1,4 +1,5 @@
 import * as assert from "assert";
+import { BigNumber } from "ethers";
 import path from "path";
 import { Block, Hash, Transaction } from "rollup-pm-sdk";
 import { Config } from "../../src/service/common/Config";
@@ -11,7 +12,7 @@ describe("Test of Storage", () => {
             "123456789",
             "0x064c9Fc53d5936792845ca58778a52317fCf47F2",
             "0",
-            BigInt(123),
+            BigNumber.from(123),
             1668044556,
             "997DE626B2D417F0361D61C09EB907A57226DB5B",
             "a5c19fed89739383",
@@ -24,7 +25,7 @@ describe("Test of Storage", () => {
             "987654321",
             "0x064c9Fc53d5936792845ca58778a52317fCf47F2",
             "0",
-            BigInt(321),
+            BigNumber.from(321),
             1313456756,
             "997DE626B2D417F0361D61C09EB907A57226DB5B",
             "a5c19fed89739383",

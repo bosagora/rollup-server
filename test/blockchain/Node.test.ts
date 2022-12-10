@@ -8,7 +8,7 @@
  *       MIT License. See LICENSE for details.
  */
 
-import { Wallet } from "ethers";
+import { BigNumber, Wallet } from "ethers";
 import { waffle } from "hardhat";
 
 import { Block, Hash, Transaction, Utils } from "rollup-pm-sdk";
@@ -77,7 +77,7 @@ describe("Test of Node", function () {
                     (12345670 + idx).toString(),
                     "0x064c9Fc53d5936792845ca58778a52317fCf47F2",
                     "0",
-                    BigInt(idx + 1),
+                    BigNumber.from(idx + 1),
                     Utils.getTimeStamp(),
                     "997DE626B2D417F0361D61C09EB907A57226DB5B",
                     "a5c19fed89739383"
