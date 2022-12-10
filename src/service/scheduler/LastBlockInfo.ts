@@ -57,14 +57,13 @@ export class LastBlockInfo {
             } else {
                 contract = op;
             }
-            const last_height = await contract.getLastHeight();
-            const last_height_bigint = BigInt(last_height.toString());
-            if (last_height_bigint === uint64max) {
-                return undefined;
-            }
-            const res = await contract.getByHeight(last_height);
+            const last_height_bn = await contract.getLastHeight();
+            if (last_height_bn.toString() === uint64max) return undefined;
+            const last_height: bigint = BigInt(last_height_bn.toString());
+
+            const res = await contract.getByHeight(last_height_bn);
             const last_hash = res[1];
-            return { height: last_height_bigint, hash: new Hash(last_hash) };
+            return { height: last_height, hash: new Hash(last_hash) };
         } catch (error) {
             return undefined;
         }
