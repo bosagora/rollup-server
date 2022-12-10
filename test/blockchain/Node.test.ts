@@ -74,6 +74,7 @@ describe("Test of Node", function () {
         for (let idx = 0; idx < 8; idx++) {
             txs.push(
                 new Transaction(
+                    idx,
                     (12345670 + idx).toString(),
                     "0x064c9Fc53d5936792845ca58778a52317fCf47F2",
                     "0",

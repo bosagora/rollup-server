@@ -54,6 +54,7 @@ describe("Test of Rollup Router", () => {
         before("Create Sample Transaction", async () => {
             const signer = new Wallet("0xf6dda8e03f9dce37c081e5d178c1fda2ebdb90b5b099de1a555a658270d8c47d");
             const txObj = new Transaction(
+                0,
                 "123456789",
                 "0x064c9Fc53d5936792845ca58778a52317fCf47F2",
                 "0",

@@ -9,6 +9,7 @@ describe("Test of Storage", () => {
     let storage: RollupStorage;
     const tx1 = DBTransaction.make(
         new Transaction(
+            0,
             "123456789",
             "0x064c9Fc53d5936792845ca58778a52317fCf47F2",
             "0",
@@ -22,6 +23,7 @@ describe("Test of Storage", () => {
     );
     const tx2 = DBTransaction.make(
         new Transaction(
+            1,
             "987654321",
             "0x064c9Fc53d5936792845ca58778a52317fCf47F2",
             "0",

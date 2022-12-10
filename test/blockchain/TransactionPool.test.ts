@@ -64,6 +64,7 @@ describe("TransactionPool", () => {
         txs = addresses.map((m, index) =>
             DBTransaction.make(
                 new Transaction(
+                    index,
                     "transaction_" + index,
                     "0x064c9Fc53d5936792845ca58778a52317fCf47F2",
                     m,

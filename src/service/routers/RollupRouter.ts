@@ -112,6 +112,15 @@ export class RollupRouter {
             "/tx/record",
             [
                 this.isAuth,
+                body("sequence")
+                    .exists()
+                    .withMessage("sequence is a required value")
+                    .not()
+                    .isEmpty()
+                    .withMessage("sequence is a required value")
+                    .isNumeric()
+                    .withMessage("sequence can only be numbers")
+                    .bail(),
                 body("trade_id")
                     .exists()
                     .withMessage("trade_id is a required value")
@@ -200,6 +209,7 @@ export class RollupRouter {
 
         try {
             const tx: Transaction = new Transaction(
+                req.body.sequence,
                 req.body.trade_id,
                 req.body.user_id,
                 req.body.state,

@@ -79,6 +79,7 @@ export class RollupStorage extends Storage {
 
             params.forEach((row) => {
                 statement.run([
+                    row.sequence,
                     row.trade_id,
                     row.user_id,
                     row.state,
@@ -159,8 +160,8 @@ export class RollupStorage extends Storage {
 }
 
 export class DBTransaction {
-    public tx_id: number | undefined;
     public hash: string;
+    public sequence: number;
     public trade_id: string;
     public user_id: string;
     public state: string;
@@ -172,6 +173,7 @@ export class DBTransaction {
     public signature: string;
 
     constructor(
+        sequence: number,
         trade_id: string,
         user_id: string,
         state: string,
@@ -183,6 +185,7 @@ export class DBTransaction {
         signature?: string,
         hash?: string
     ) {
+        this.sequence = sequence;
         this.trade_id = trade_id;
         this.user_id = user_id;
         this.state = state;
@@ -206,6 +209,7 @@ export class DBTransaction {
         return dbTx.map(
             (row) =>
                 new Transaction(
+                    row.sequence,
                     row.trade_id,
                     row.user_id,
                     row.state,
