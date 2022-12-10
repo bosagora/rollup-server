@@ -4,9 +4,9 @@ import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
 
 import * as assert from "assert";
-import { Wallet } from "ethers";
+import { BigNumber, Wallet } from "ethers";
 import * as path from "path";
-import { Transaction } from "rollup-pm-sdk";
+import { ITransaction, Transaction } from "rollup-pm-sdk";
 import { URL } from "url";
 import { RollupServer } from "../../src/service/RollupServer";
 import { DBTransaction, RollupStorage } from "../../src/service/storage/RollupStorage";
@@ -47,20 +47,24 @@ describe("Test of Rollup Router", () => {
         await rollupServer.stop();
     });
 
-    context("Rollup API Call Test", () => {
+    context("Rollup API Call Test", async () => {
         const token: string = "9812176e565a007a84c5d2fc4cf842b12eb26dbc7568b4e40fc4f2418f2c8f54";
-        const tx = {
-            trade_id: "123456789",
-            user_id: "0x064c9Fc53d5936792845ca58778a52317fCf47F2",
-            state: "0",
-            amount: "12300",
-            timestamp: 1668044556,
-            exchange_user_id: "997DE626B2D417F0361D61C09EB907A57226DB5B",
-            exchange_id: "a5c19fed89739383",
-            signer: "0x19dCAc1131Dfa2fdBbf992261d54c03dDE616D75",
-            signature:
-                "0xf3d449722e5e38d0045bdcf538286e44cfc04cde67fa2e7beeca6c3f275b6db723d2cdc4c2cffe1cfa0441f6390975ddeaed6d4bbc5dbd2610e9cae32634f9cc1c",
-        };
+        let tx: ITransaction;
+
+        before("Create Sample Transaction", async () => {
+            const signer = new Wallet("0xf6dda8e03f9dce37c081e5d178c1fda2ebdb90b5b099de1a555a658270d8c47d");
+            const txObj = new Transaction(
+                "123456789",
+                "0x064c9Fc53d5936792845ca58778a52317fCf47F2",
+                "0",
+                BigNumber.from("12300"),
+                1668044556,
+                "997DE626B2D417F0361D61C09EB907A57226DB5B",
+                "a5c19fed89739383"
+            );
+            await txObj.sign(signer);
+            tx = txObj.toJSON();
+        });
 
         it("Send transaction data to api server", async () => {
             chai.request(serverURL)

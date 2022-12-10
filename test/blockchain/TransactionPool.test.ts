@@ -9,6 +9,7 @@
  */
 
 import * as assert from "assert";
+import { BigNumber } from "ethers";
 import path from "path";
 import { Transaction, Utils } from "rollup-pm-sdk";
 import { Config } from "../../src/service/common/Config";
@@ -66,7 +67,7 @@ describe("TransactionPool", () => {
                     "transaction_" + index,
                     "0x064c9Fc53d5936792845ca58778a52317fCf47F2",
                     m,
-                    10000n,
+                    BigNumber.from(10000),
                     Utils.getTimeStamp(),
                     "",
                     ""
@@ -92,7 +93,7 @@ describe("TransactionPool", () => {
             assert.strictEqual(tx[0].trade_id, txs[idx].trade_id);
             assert.strictEqual(tx[0].user_id, txs[idx].user_id);
             assert.strictEqual(tx[0].state, txs[idx].state);
-            assert.strictEqual(tx[0].amount, txs[idx].amount.toString());
+            assert.strictEqual(tx[0].amount.toString(), txs[idx].amount.toString());
             assert.strictEqual(tx[0].timestamp, txs[idx].timestamp);
             assert.strictEqual(tx[0].exchange_user_id, txs[idx].exchange_user_id);
             assert.strictEqual(tx[0].exchange_id, txs[idx].exchange_id);

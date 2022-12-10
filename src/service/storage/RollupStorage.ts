@@ -8,6 +8,7 @@
  *       MIT License. See LICENSE for details.
  */
 
+import { BigNumber } from "ethers";
 import { Block, BlockHeader, Hash, hashFull, Transaction } from "rollup-pm-sdk";
 import { Storage } from "../../modules/storage/Storage";
 import { IDatabaseConfig } from "../common/Config";
@@ -174,7 +175,7 @@ export class DBTransaction {
         trade_id: string,
         user_id: string,
         state: string,
-        amount: bigint,
+        amount: BigNumber,
         timestamp: number,
         exchange_user_id: string,
         exchange_id: string,
@@ -208,7 +209,7 @@ export class DBTransaction {
                     row.trade_id,
                     row.user_id,
                     row.state,
-                    BigInt(row.amount),
+                    BigNumber.from(row.amount),
                     row.timestamp,
                     row.exchange_user_id,
                     row.exchange_id,

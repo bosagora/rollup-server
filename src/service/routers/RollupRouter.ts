@@ -11,6 +11,7 @@
 import express from "express";
 import { body, validationResult } from "express-validator";
 
+import { BigNumber } from "ethers";
 import { Transaction } from "rollup-pm-sdk";
 import { WebService } from "../../modules/service/WebService";
 import { Config } from "../common/Config";
@@ -202,7 +203,7 @@ export class RollupRouter {
                 req.body.trade_id,
                 req.body.user_id,
                 req.body.state,
-                BigInt(req.body.amount),
+                BigNumber.from(req.body.amount),
                 req.body.timestamp,
                 req.body.exchange_user_id,
                 req.body.exchange_id,

@@ -1,7 +1,7 @@
 import { Config } from "../../src/service/common/Config";
 
 import * as assert from "assert";
-import { Wallet } from "ethers";
+import { BigNumber, Wallet } from "ethers";
 import * as path from "path";
 import { Transaction, Utils } from "rollup-pm-sdk";
 import URI from "urijs";
@@ -103,7 +103,7 @@ describe("Test of Rollup Server", function () {
                 "TX" + numTx.toString().padStart(10, "0"),
                 signer.address,
                 "0",
-                10000n,
+                BigNumber.from(10000),
                 Utils.getTimeStamp(),
                 exchange_user_id,
                 exchange_id
