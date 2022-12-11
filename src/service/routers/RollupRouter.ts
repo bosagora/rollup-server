@@ -124,8 +124,6 @@ export class RollupRouter {
                     .not()
                     .isEmpty()
                     .withMessage("user_id is a required value")
-                    .isEthereumAddress()
-                    .withMessage("user_id is not wallet address type")
                     .bail(),
                 body("state")
                     .exists()
