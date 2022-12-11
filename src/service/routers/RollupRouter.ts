@@ -124,6 +124,7 @@ export class RollupRouter {
 
     public registerRoutes() {
         this.app.get("/", [], RollupRouter.getHealthStatus.bind(this));
+        this.app.get("/tx/sequence", [], this.getSequence.bind(this));
         this.app.post(
             "/tx/record",
             [
@@ -214,6 +215,26 @@ export class RollupRouter {
 
     private static async getHealthStatus(req: express.Request, res: express.Response) {
         return res.json("OK");
+    }
+
+    /**
+     * GET /tx/sequence
+     * @private
+     */
+    private async getSequence(req: express.Request, res: express.Response) {
+        logger.http(`GET /tx/sequence`);
+
+        try {
+            const sequence = await this.storage.getLastReceiveSequence();
+            return res.json(RollupRouter.makeResponseData(200, { sequence }));
+        } catch (error) {
+            logger.error("POST /tx/sequence , " + error);
+            return res.status(500).json(
+                RollupRouter.makeResponseData(500, undefined, {
+                    msg: "Failed to transaction record.",
+                })
+            );
+        }
     }
 
     /**

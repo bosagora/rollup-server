@@ -238,5 +238,12 @@ describe("Test of Rollup Server", function () {
             assert.strictEqual(res.data.code, 200);
             assert.strictEqual(res.data.data, "SUCCESS");
         });
+
+        it("GET /tx/sequence", async () => {
+            const url = URI(serverURL).directory("tx/sequence").toString();
+            const res = await client.get(url);
+            assert.strictEqual(res.data.code, 200);
+            assert.strictEqual(res.data.data.sequence, 25);
+        });
     });
 });
