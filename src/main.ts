@@ -13,7 +13,6 @@ import { Scheduler } from "./modules/scheduler/Scheduler";
 import { Config } from "./service/common/Config";
 import { logger, Logger } from "./service/common/Logger";
 import { RollupServer } from "./service/RollupServer";
-import { LastBlockInfo } from "./service/scheduler/LastBlockInfo";
 import { Node } from "./service/scheduler/Node";
 import { SendBlock } from "./service/scheduler/SendBlock";
 import { RollupStorage } from "./service/storage/RollupStorage";
@@ -54,8 +53,7 @@ async function main() {
     if (config.scheduler.enable) {
         let scheduler = config.scheduler.getScheduler("node");
         if (scheduler && scheduler.enable) {
-            node = new Node();
-            schedulers.push(node);
+            schedulers.push(new Node());
         }
         scheduler = config.scheduler.getScheduler("send_block");
         if (scheduler && scheduler.enable) {
@@ -68,10 +66,6 @@ async function main() {
             if (process.env.NODE_ENV !== "production") {
                 const manager = new Wallet(config.contracts.rollup_manager_key);
                 await HardhatUtils.deployRollupContract(config, manager);
-            }
-            if (node !== undefined) {
-                const lastInfo = await LastBlockInfo.getInfo(storage, config);
-                if (lastInfo !== undefined) node.setLastBlockInfo(lastInfo);
             }
             server = new RollupServer(config, storage, schedulers);
             return server.start().catch((error: any) => {
