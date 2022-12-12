@@ -1,6 +1,5 @@
 import * as dotenv from "dotenv";
 
-import "hardhat-change-network";
 // tslint:disable-next-line:no-submodule-imports
 import { HardhatUserConfig, task } from "hardhat/config";
 // tslint:disable-next-line:no-submodule-imports
