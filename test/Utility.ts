@@ -11,8 +11,8 @@ export class TestRollupServer extends RollupServer {}
 export class TestClient {
     private client: AxiosInstance;
 
-    constructor() {
-        this.client = axios.create();
+    constructor(config?: AxiosRequestConfig) {
+        this.client = axios.create(config);
     }
 
     public get(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse> {
@@ -23,7 +23,11 @@ export class TestClient {
                     resolve(response);
                 })
                 .catch((reason: any) => {
-                    reject(handleNetworkError(reason));
+                    if (reason.response !== undefined && reason.response.status !== undefined) {
+                        resolve(reason.response);
+                    } else {
+                        reject(handleNetworkError(reason));
+                    }
                 });
         });
     }
@@ -36,7 +40,11 @@ export class TestClient {
                     resolve(response);
                 })
                 .catch((reason: any) => {
-                    reject(handleNetworkError(reason));
+                    if (reason.response !== undefined && reason.response.status !== undefined) {
+                        resolve(reason.response);
+                    } else {
+                        reject(handleNetworkError(reason));
+                    }
                 });
         });
     }
@@ -49,7 +57,11 @@ export class TestClient {
                     resolve(response);
                 })
                 .catch((reason: any) => {
-                    reject(handleNetworkError(reason));
+                    if (reason.response !== undefined && reason.response.status !== undefined) {
+                        resolve(reason.response);
+                    } else {
+                        reject(handleNetworkError(reason));
+                    }
                 });
         });
     }
@@ -62,7 +74,11 @@ export class TestClient {
                     resolve(response);
                 })
                 .catch((reason: any) => {
-                    reject(handleNetworkError(reason));
+                    if (reason.response !== undefined && reason.response.status !== undefined) {
+                        resolve(reason.response);
+                    } else {
+                        reject(handleNetworkError(reason));
+                    }
                 });
         });
     }
