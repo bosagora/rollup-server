@@ -20,6 +20,7 @@ describe("Test of Config", () => {
 
         assert.strictEqual(config.node.interval, 10);
         assert.strictEqual(config.node.max_txs, 8);
+        assert.strictEqual(config.node.send_interval, 12);
 
         assert.strictEqual(config.node.ipfs_api_url, "http://localhost:5001");
         assert.strictEqual(config.node.ipfs_gateway_url, "http://localhost:8080");

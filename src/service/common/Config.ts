@@ -287,6 +287,7 @@ export class LoggingConfig implements ILoggingConfig {
 export class NodeConfig implements INodeConfig {
     public interval: number;
     public max_txs: number;
+    public send_interval: number;
     public ipfs_api_url: string;
     public ipfs_gateway_url: string;
     public ipfs_test: boolean;
@@ -299,6 +300,7 @@ export class NodeConfig implements INodeConfig {
 
         this.interval = defaults.interval;
         this.max_txs = defaults.max_txs;
+        this.send_interval = defaults.send_interval;
         this.ipfs_api_url = defaults.ipfs_api_url;
         this.ipfs_gateway_url = defaults.ipfs_gateway_url;
         this.ipfs_test = defaults.ipfs_test;
@@ -311,6 +313,7 @@ export class NodeConfig implements INodeConfig {
         return {
             interval: 600,
             max_txs: 128,
+            send_interval: 14,
             ipfs_api_url: "https://api-ipfs.bosagora.info",
             ipfs_gateway_url: "https://ipfs.bosagora.info",
             ipfs_test: true,
@@ -324,6 +327,7 @@ export class NodeConfig implements INodeConfig {
     public readFromObject(config: INodeConfig) {
         if (config.interval !== undefined) this.interval = config.interval;
         if (config.max_txs !== undefined) this.max_txs = config.max_txs;
+        if (config.send_interval !== undefined) this.send_interval = config.send_interval;
         if (config.ipfs_api_url !== undefined) this.ipfs_api_url = config.ipfs_api_url;
         if (config.ipfs_gateway_url !== undefined) this.ipfs_gateway_url = config.ipfs_gateway_url;
         if (config.ipfs_test !== undefined) this.ipfs_test = config.ipfs_test;
@@ -368,6 +372,7 @@ export interface ILoggingConfig {
 export interface INodeConfig {
     interval: number;
     max_txs: number;
+    send_interval: number;
     ipfs_api_url: string;
     ipfs_gateway_url: string;
     ipfs_test: boolean;

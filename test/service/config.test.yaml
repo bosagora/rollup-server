@@ -9,6 +9,7 @@ logging:
 node:
     interval: 10
     max_txs: 8
+    send_interval: 12
     ipfs_api_url: http://localhost:5001
     ipfs_gateway_url: http://localhost:8080
     ipfs_test: true
