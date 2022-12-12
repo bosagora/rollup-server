@@ -117,7 +117,7 @@ export class RollupStorage extends Storage {
     }
 
     public deleteTxByHash(hash: string): Promise<boolean> {
-        return new Promise((resolve, reject) => {
+        return new Promise<boolean>((resolve, reject) => {
             this.database.run(deleteTxByHashQuery, [hash], (err: Error | null) => {
                 if (err) reject(err);
                 else resolve(true);
@@ -126,7 +126,7 @@ export class RollupStorage extends Storage {
     }
 
     public selectTxsLength(): Promise<number> {
-        return new Promise((resolve, reject) => {
+        return new Promise<number>((resolve, reject) => {
             this.database.all(selectTxsLength, [], (err: Error | null, row) => {
                 if (err) reject(err);
                 else resolve(row?.length ? row[0].count : null);
@@ -135,7 +135,7 @@ export class RollupStorage extends Storage {
     }
 
     public selectLastHeight(): Promise<number> {
-        return new Promise((resolve, reject) => {
+        return new Promise<number>((resolve, reject) => {
             this.database.all(selectBlockLastHeight, [], (err: Error | null, row) => {
                 if (err) reject(err);
                 else {
@@ -147,7 +147,7 @@ export class RollupStorage extends Storage {
     }
 
     public selectBlockByHeight(height: number): Promise<any> {
-        return new Promise<DBTransaction[]>((resolve, reject) => {
+        return new Promise<any>((resolve, reject) => {
             this.database.all(selectBlockByHeightQuery, [height], (err: Error | null, row: any) => {
                 if (err) reject(err);
                 else resolve(row[0]);
