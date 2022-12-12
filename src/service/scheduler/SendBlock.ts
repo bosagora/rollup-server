@@ -11,6 +11,7 @@
 import { NonceManager } from "@ethersproject/experimental";
 import { Signer, Wallet } from "ethers";
 import { ethers } from "hardhat";
+import { Utils } from "rollup-pm-sdk";
 import { RollUp } from "../../../typechain-types";
 import { Scheduler } from "../../modules";
 import { Config } from "../common/Config";
@@ -45,12 +46,19 @@ export class SendBlock extends Scheduler {
     private _managerSigner: NonceManager | undefined;
 
     /**
+     * This is the timestamp when the previous block was created
+     */
+    private old_time_stamp: number;
+
+    /**
      * Constructor
      * @param interval
      */
-    constructor(interval: number = 14) {
+    constructor(interval: number = 1) {
         // interval second
         super(interval);
+
+        this.old_time_stamp = Utils.getTimeStamp();
     }
 
     /**
@@ -107,7 +115,15 @@ export class SendBlock extends Scheduler {
      * @protected
      */
     protected override async work() {
+        const new_time_stamp = Utils.getTimeStamp();
         try {
+            const old_period = Math.floor(this.old_time_stamp / this.config.node.send_interval);
+            const new_period = Math.floor(new_time_stamp / this.config.node.send_interval);
+
+            if (old_period === new_period) return;
+
+            this.old_time_stamp = new_time_stamp;
+
             if (this._rollup === undefined) {
                 const contractFactory = await ethers.getContractFactory("RollUp");
                 this._rollup = contractFactory.attach(this.config.contracts.rollup_address) as RollUp;
@@ -139,14 +155,7 @@ export class SendBlock extends Scheduler {
                 try {
                     await this._rollup
                         .connect(this.managerSigner)
-                        .add(
-                            data.height,
-                            data.cur_block,
-                            data.prev_block,
-                            data.merkle_root,
-                            data.timestamp,
-                            data.CID
-                        )
+                        .add(data.height, data.cur_block, data.prev_block, data.merkle_root, data.timestamp, data.CID)
                         .then(() => {
                             logger.info(`Successful in adding blocks to the blockchain. Height: ${data.height}`);
                         });
