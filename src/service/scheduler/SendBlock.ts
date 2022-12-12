@@ -52,11 +52,9 @@ export class SendBlock extends Scheduler {
 
     /**
      * Constructor
-     * @param interval
      */
-    constructor(interval: number = 1) {
-        // interval second
-        super(interval);
+    constructor() {
+        super(1);
 
         this.old_time_stamp = Utils.getTimeStamp();
     }

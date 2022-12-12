@@ -50,11 +50,11 @@ async function main() {
     if (config.scheduler.enable) {
         let scheduler = config.scheduler.getScheduler("node");
         if (scheduler && scheduler.enable) {
-            schedulers.push(new Node(scheduler.interval));
+            schedulers.push(new Node());
         }
         scheduler = config.scheduler.getScheduler("send_block");
         if (scheduler && scheduler.enable) {
-            schedulers.push(new SendBlock(scheduler.interval));
+            schedulers.push(new SendBlock());
         }
     }
 

@@ -52,7 +52,7 @@ describe("Test of SendBlock", () => {
         })();
         const send_block_scheduler = config.scheduler.getScheduler("send_block");
         if (send_block_scheduler && send_block_scheduler.enable) {
-            sendBlock = new SendBlock(send_block_scheduler.interval);
+            sendBlock = new SendBlock();
         }
         sendBlock.setOption({ config, storage });
     });

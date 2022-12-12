@@ -67,8 +67,8 @@ export class Node extends Scheduler {
      */
     private old_time_stamp: number;
 
-    constructor(interval: number = 1) {
-        super(interval);
+    constructor() {
+        super(1);
         this._pool = new TransactionPool();
         this.prev_hash = Hash.Null;
         this.prev_height = -1n;
