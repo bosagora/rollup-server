@@ -71,7 +71,7 @@ describe("Test of SendBlock", () => {
 
         // Test Block height 0
         await storage.insertBlock(block_0, cid);
-        await delay(2000);
+        await delay(5000);
         assert.deepStrictEqual(await rollUp.connect(admin_signer).getLastHeight(), BigNumber.from(0));
         assert.deepStrictEqual(await rollUp.size(), BigNumber.from(1));
         const sc_block_0 = await rollUp.connect(admin_signer).getByHeight(BigNumber.from(0));
@@ -84,7 +84,7 @@ describe("Test of SendBlock", () => {
         assert.deepStrictEqual(sc_block_0[5], db_block_0.CID);
         // Test Block height 1
         await storage.insertBlock(block_1, cid);
-        await delay(2000);
+        await delay(5000);
         assert.deepStrictEqual(await rollUp.connect(admin_signer).getLastHeight(), BigNumber.from(1));
         assert.deepStrictEqual(await rollUp.size(), BigNumber.from(2));
         const sc_block_1 = await rollUp.connect(admin_signer).getByHeight(BigNumber.from(1));
