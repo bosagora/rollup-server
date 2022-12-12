@@ -12,43 +12,6 @@
 import * as cron from "node-cron";
 
 /**
- * An interface to perform tasks for a predetermined time.
- */
-export interface IScheduler {
-    /**
-     * Start a task
-     */
-    start(): void;
-
-    /**
-     * Stop a task
-     */
-    stop(): void;
-
-    /**
-     * If the work is running, return true
-     */
-    isRunning(): boolean;
-
-    /**
-     * If the work is running, return true
-     */
-    isWorking(): boolean;
-
-    /**
-     * Enter the option needed to perform the task
-     * @param options The option needed to perform the task
-     */
-    setOption(options: any): void;
-
-    /**
-     * 스케줄러의 진행중인 작업이 완전히 종료될 때 까지 대기한다.
-     * @param timeout Timeout milli seconds
-     */
-    waitForStop(timeout?: number): Promise<boolean>;
-}
-
-/**
  * 스케줄러의 실행상태에 대한 정의
  */
 export enum ScheduleState {
@@ -62,7 +25,7 @@ export enum ScheduleState {
 /**
  * A class to perform tasks for a predetermined time.
  */
-export class Scheduler implements IScheduler {
+export class Scheduler {
     /**
      * Cron 스케줄러 태스크의 객체
      */
@@ -96,26 +59,35 @@ export class Scheduler implements IScheduler {
     /**
      * 스케줄러를 시작한다.
      */
-    public start() {
+    public async start() {
         this.state = ScheduleState.STARTING;
         this.is_working = false;
         this.task = cron.schedule(`*/${this.interval} * * * * *`, this.workTask.bind(this));
         this.addEventHandlers();
         this.state = ScheduleState.RUNNING;
+        await this.onStart();
     }
+
+    // tslint:disable-next-line:no-empty
+    public async onStart() {}
 
     /**
      * 스케줄러의 종료명령을 실행한다.
      * 스케줄러의 진행중인 작업이 완료되기 위해서는 waitForStop 를 이용하여 완료될 때 까지 대기하여야 한다.
      */
-    public stop() {
+    public async stop() {
         this.state = ScheduleState.STOPPING;
 
         // 작업이 실행중이 아니면 즉시 종료한다. 그렇지 않으면 대기한다.
         if (!this.is_working) {
             this.state = ScheduleState.STOPPED;
         }
+
+        await this.onStart();
     }
+
+    // tslint:disable-next-line:no-empty
+    public async onStop() {}
 
     private stopTask() {
         if (this.task !== null) {
