@@ -67,7 +67,7 @@ describe("Test of SendBlock", () => {
         const cid = "CID";
         const block_0 = Block.createBlock(prev_hash, 0n, []);
         block_0.header.height = 0n;
-        const block_1 = Block.createBlock(hashFull(block_0), 0n, []);
+        const block_1 = Block.createBlock(hashFull(block_0.header), 0n, []);
 
         // Test Block height 0
         await storage.insertBlock(block_0, cid);
