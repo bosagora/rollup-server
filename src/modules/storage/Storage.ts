@@ -61,7 +61,7 @@ export class Storage {
         return new Promise((resolve, reject) => {
             this.database.run(sql, params, (err) => {
                 if (err) reject(err);
-                resolve(true);
+                else resolve(true);
             });
         });
     }

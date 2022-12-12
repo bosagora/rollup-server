@@ -33,7 +33,7 @@ export class RollupStorage extends Storage {
         return new Promise<void>((resolve, reject) => {
             this.database.exec(createTablesQuery, (err) => {
                 if (err) reject(err);
-                resolve();
+                else resolve();
             });
         });
     }
@@ -66,7 +66,7 @@ export class RollupStorage extends Storage {
                 ],
                 (err: Error | null) => {
                     if (err) reject(err);
-                    resolve(true);
+                    else resolve(true);
                 }
             );
         });
@@ -92,10 +92,8 @@ export class RollupStorage extends Storage {
                 ]);
             });
             statement.finalize((err) => {
-                if (err) {
-                    reject(err);
-                }
-                resolve(true);
+                if (err) reject(err);
+                else resolve(true);
             });
         });
     }
@@ -104,8 +102,7 @@ export class RollupStorage extends Storage {
         return new Promise<DBTransaction[]>((resolve, reject) => {
             this.database.all(selectTxByLengthQuery, [length], (err: Error | null, row: DBTransaction[]) => {
                 if (err) reject(err);
-                const list = row.map((tx: DBTransaction) => tx as DBTransaction);
-                resolve(list);
+                else resolve(row.map((tx: DBTransaction) => tx as DBTransaction));
             });
         });
     }
@@ -114,11 +111,7 @@ export class RollupStorage extends Storage {
         return new Promise<DBTransaction | null>((resolve, reject) => {
             this.database.all(selectTxByHashQuery, [hash], (err: Error | null, row: DBTransaction[]) => {
                 if (err) reject(err);
-                if (row.length > 0) {
-                    resolve(row[0] as DBTransaction);
-                } else {
-                    resolve(null);
-                }
+                else resolve(row.length > 0 ? (row[0] as DBTransaction) : null);
             });
         });
     }
@@ -127,7 +120,7 @@ export class RollupStorage extends Storage {
         return new Promise((resolve, reject) => {
             this.database.run(deleteTxByHashQuery, [hash], (err: Error | null) => {
                 if (err) reject(err);
-                resolve(true);
+                else resolve(true);
             });
         });
     }
@@ -136,11 +129,7 @@ export class RollupStorage extends Storage {
         return new Promise((resolve, reject) => {
             this.database.all(selectTxsLength, [], (err: Error | null, row) => {
                 if (err) reject(err);
-                if (row?.length) {
-                    resolve(row[0].count);
-                } else {
-                    reject(null);
-                }
+                else resolve(row?.length ? row[0].count : null);
             });
         });
     }
@@ -149,10 +138,9 @@ export class RollupStorage extends Storage {
         return new Promise((resolve, reject) => {
             this.database.all(selectBlockLastHeight, [], (err: Error | null, row) => {
                 if (err) reject(err);
-                if (row?.length) {
-                    resolve(row[0].height);
-                } else {
-                    resolve(Number.NaN);
+                else {
+                    if (row?.length) resolve(row[0].height);
+                    else resolve(Number.NaN);
                 }
             });
         });
@@ -162,7 +150,7 @@ export class RollupStorage extends Storage {
         return new Promise<DBTransaction[]>((resolve, reject) => {
             this.database.all(selectBlockByHeightQuery, [height], (err: Error | null, row: any) => {
                 if (err) reject(err);
-                resolve(row[0]);
+                else resolve(row[0]);
             });
         });
     }
