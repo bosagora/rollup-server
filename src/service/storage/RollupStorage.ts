@@ -52,7 +52,7 @@ export class RollupStorage extends Storage {
         return new Promise((resolve, reject) => {
             if (_block?.header === undefined) reject("The data is not available.");
             if (_CID.length <= 0) reject("The CID is not valid.");
-            const cur_hash: Hash = hashFull(_block);
+            const cur_hash: Hash = hashFull(_block.header);
             const header: BlockHeader = _block.header;
             this.database.run(
                 insertBlockQuery,
