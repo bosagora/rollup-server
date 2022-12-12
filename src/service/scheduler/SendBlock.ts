@@ -9,7 +9,7 @@
  */
 
 import { NonceManager } from "@ethersproject/experimental";
-import { Wallet } from "ethers";
+import { Signer, Wallet } from "ethers";
 import { ethers } from "hardhat";
 import { RollUp } from "../../../typechain-types";
 import { Scheduler } from "../../modules";
@@ -67,14 +67,14 @@ export class SendBlock extends Scheduler {
 
     /**
      * Returns the value if this._managerSigner is defined.
-     * Otherwise, exit the process.
+     * Otherwise, make signer
      */
-    private get managerSigner(): NonceManager {
-        if (this._managerSigner !== undefined) return this._managerSigner;
-        else {
-            logger.error("ManagerSigner is not ready yet.");
-            process.exit(1);
+    private get managerSigner(): Signer {
+        if (this._managerSigner === undefined) {
+            const manager = new Wallet(this.config.contracts.rollup_manager_key);
+            this._managerSigner = new NonceManager(new GasPriceManager(ethers.provider.getSigner(manager.address)));
         }
+        return this._managerSigner;
     }
 
     /**
@@ -109,9 +109,6 @@ export class SendBlock extends Scheduler {
     protected override async work() {
         try {
             if (this._rollup === undefined) {
-                const manager = new Wallet(this.config.contracts.rollup_manager_key || "");
-                this._managerSigner = new NonceManager(new GasPriceManager(ethers.provider.getSigner(manager.address)));
-
                 const contractFactory = await ethers.getContractFactory("RollUp");
                 this._rollup = contractFactory.attach(this.config.contracts.rollup_address) as RollUp;
             }
