@@ -75,7 +75,7 @@ describe("Test of SendBlock", () => {
         assert.deepStrictEqual(await rollUp.connect(admin_signer).getLastHeight(), BigNumber.from(0));
         assert.deepStrictEqual(await rollUp.size(), BigNumber.from(1));
         const sc_block_0 = await rollUp.connect(admin_signer).getByHeight(BigNumber.from(0));
-        const db_block_0 = await storage.selectBlockByHeight(0);
+        const db_block_0 = await storage.selectBlockByHeight(0n);
         assert.deepStrictEqual(sc_block_0[0], BigNumber.from(db_block_0.height));
         assert.deepStrictEqual(sc_block_0[1], db_block_0.cur_block);
         assert.deepStrictEqual(sc_block_0[2], db_block_0.prev_block);
@@ -88,7 +88,7 @@ describe("Test of SendBlock", () => {
         assert.deepStrictEqual(await rollUp.connect(admin_signer).getLastHeight(), BigNumber.from(1));
         assert.deepStrictEqual(await rollUp.size(), BigNumber.from(2));
         const sc_block_1 = await rollUp.connect(admin_signer).getByHeight(BigNumber.from(1));
-        const db_block_1 = await storage.selectBlockByHeight(1);
+        const db_block_1 = await storage.selectBlockByHeight(1n);
         assert.deepStrictEqual(sc_block_1[0], BigNumber.from(db_block_1.height));
         assert.deepStrictEqual(sc_block_1[1], db_block_1.cur_block);
         assert.deepStrictEqual(sc_block_1[2], db_block_1.prev_block);

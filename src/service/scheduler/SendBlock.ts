@@ -116,12 +116,7 @@ export class SendBlock extends Scheduler {
             const last_height: bigint = BigInt((await this._rollup.getLastHeight()).toString());
             const db_last_height = await this.storage.selectLastHeight();
 
-            if (last_height === undefined) {
-                logger.info(`The contract has not set the last block height.`);
-                return;
-            }
-
-            if (db_last_height === Number.NaN) {
+            if (db_last_height === null) {
                 logger.info(`No block data in DB.`);
                 return;
             }
@@ -135,9 +130,9 @@ export class SendBlock extends Scheduler {
             let data: any = null;
             // Genesis Block
             if (last_height === uint64max && db_last_height >= 0) {
-                data = await this.storage.selectBlockByHeight(0);
+                data = await this.storage.selectBlockByHeight(0n);
             } else if (db_last_height > last_height) {
-                data = await this.storage.selectBlockByHeight(Number(last_height + 1n));
+                data = await this.storage.selectBlockByHeight(last_height + 1n);
             }
 
             if (data) {
