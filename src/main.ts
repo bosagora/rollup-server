@@ -8,13 +8,16 @@
  *       MIT License. See LICENSE for details.
  */
 
+import { Wallet } from "ethers";
 import { IScheduler } from "./modules/scheduler/Scheduler";
 import { Config } from "./service/common/Config";
 import { logger, Logger } from "./service/common/Logger";
 import { RollupServer } from "./service/RollupServer";
+import { LastBlockInfo } from "./service/scheduler/LastBlockInfo";
 import { Node } from "./service/scheduler/Node";
 import { SendBlock } from "./service/scheduler/SendBlock";
 import { RollupStorage } from "./service/storage/RollupStorage";
+import { HardhatUtils } from "./service/utils";
 
 let server: RollupServer;
 
@@ -46,11 +49,13 @@ async function main() {
     logger.info(`address: ${config.server.address}`);
     logger.info(`port: ${config.server.port}`);
 
+    let node: Node;
     const schedulers: IScheduler[] = [];
     if (config.scheduler.enable) {
         let scheduler = config.scheduler.getScheduler("node");
         if (scheduler && scheduler.enable) {
-            schedulers.push(new Node());
+            node = new Node();
+            schedulers.push(node);
         }
         scheduler = config.scheduler.getScheduler("send_block");
         if (scheduler && scheduler.enable) {
@@ -59,7 +64,15 @@ async function main() {
     }
 
     RollupStorage.make(config.database)
-        .then((storage: RollupStorage) => {
+        .then(async (storage: RollupStorage) => {
+            if (process.env.NODE_ENV !== "production") {
+                const manager = new Wallet(config.contracts.rollup_manager_key);
+                await HardhatUtils.deployRollupContract(config, manager);
+            }
+            if (node !== undefined) {
+                const lastInfo = await LastBlockInfo.getInfo(storage, config);
+                if (lastInfo !== undefined) node.setLastBlockInfo(lastInfo);
+            }
             server = new RollupServer(config, storage, schedulers);
             return server.start().catch((error: any) => {
                 // handle specific listen errors with friendly messages

@@ -15,6 +15,7 @@ import { TransactionPool } from "./TransactionPool";
 
 import { Block, Hash, hashFull, Transaction, Utils } from "rollup-pm-sdk";
 import { DBTransaction, RollupStorage } from "../storage/RollupStorage";
+import { ILastBlockInfo } from "./LastBlockInfo";
 
 /**
  * Definition of event type
@@ -144,6 +145,11 @@ export class Node extends Scheduler {
         }
     }
 
+    public setLastBlockInfo(info: ILastBlockInfo) {
+        this.prev_height = info.height;
+        this.prev_hash = info.hash;
+    }
+
     /**
      * Set the event handler.
      * @param value
@@ -177,17 +183,6 @@ export class Node extends Scheduler {
                 // 트랜잭션이 존재하면
                 if (txs.length > 0) {
                     const txList = DBTransaction.converterTxArray(txs);
-
-                    // 이전에 생성된 블록의 높이가 설정되지 않으면
-                    if (this.prev_height === -1n) {
-                        // 데이타베이스에 저장된 블록의 높이를 가지고 온다.
-                        const db_last_height = await this.storage.selectLastHeight();
-                        if (db_last_height !== null) {
-                            const db_block = await this.storage.selectBlockByHeight(db_last_height);
-                            this.prev_height = BigInt(db_block.height);
-                            this.prev_hash = new Hash(db_block.prev_hash);
-                        }
-                    }
 
                     const block = Block.createBlock(this.prev_hash, this.prev_height, txList);
 
