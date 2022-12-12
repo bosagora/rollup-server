@@ -10,7 +10,7 @@
 
 import bodyParser from "body-parser";
 import cors from "cors";
-import { IScheduler } from "../modules/scheduler/Scheduler";
+import { Scheduler } from "../modules/scheduler/Scheduler";
 import { WebService } from "../modules/service/WebService";
 import { Config } from "./common/Config";
 import { cors_options } from "./option/cors";
@@ -23,7 +23,7 @@ export class RollupServer extends WebService {
      * The collection of schedulers
      * @protected
      */
-    protected schedules: IScheduler[] = [];
+    protected schedules: Scheduler[] = [];
 
     /**
      * The configuration of the database
@@ -43,7 +43,7 @@ export class RollupServer extends WebService {
      * @param storage Rollup Storage
      * @param schedules Array of IScheduler
      */
-    constructor(config: Config, storage: RollupStorage, schedules?: IScheduler[]) {
+    constructor(config: Config, storage: RollupStorage, schedules?: Scheduler[]) {
         super(config.server.port, config.server.address);
 
         this.config = config;
@@ -78,14 +78,14 @@ export class RollupServer extends WebService {
 
         this.rollupRouter.registerRoutes();
 
-        this.schedules.forEach((m) => m.start());
+        for (const m of this.schedules) await (m as Scheduler).start();
 
         return super.start();
     }
 
     public stop(): Promise<void> {
         return new Promise<void>(async (resolve, reject) => {
-            for (const m of this.schedules) m.stop();
+            for (const m of this.schedules) await m.stop();
             for (const m of this.schedules) await m.waitForStop();
             if (this.server != null) {
                 this.server.close((err?) => {

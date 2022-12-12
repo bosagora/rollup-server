@@ -9,7 +9,7 @@
  */
 
 import { Wallet } from "ethers";
-import { IScheduler } from "./modules/scheduler/Scheduler";
+import { Scheduler } from "./modules/scheduler/Scheduler";
 import { Config } from "./service/common/Config";
 import { logger, Logger } from "./service/common/Logger";
 import { RollupServer } from "./service/RollupServer";
@@ -50,7 +50,7 @@ async function main() {
     logger.info(`port: ${config.server.port}`);
 
     let node: Node;
-    const schedulers: IScheduler[] = [];
+    const schedulers: Scheduler[] = [];
     if (config.scheduler.enable) {
         let scheduler = config.scheduler.getScheduler("node");
         if (scheduler && scheduler.enable) {
