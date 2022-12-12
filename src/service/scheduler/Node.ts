@@ -15,7 +15,7 @@ import { TransactionPool } from "./TransactionPool";
 
 import { Block, Hash, hashFull, Transaction, Utils } from "rollup-pm-sdk";
 import { DBTransaction, RollupStorage } from "../storage/RollupStorage";
-import { ILastBlockInfo } from "./LastBlockInfo";
+import { LastBlockInfo } from "./LastBlockInfo";
 
 /**
  * Definition of event type
@@ -145,9 +145,16 @@ export class Node extends Scheduler {
         }
     }
 
-    public setLastBlockInfo(info: ILastBlockInfo) {
-        this.prev_height = info.height;
-        this.prev_hash = info.hash;
+    /**
+     * Called when the scheduler starts.
+     */
+    public async onStart() {
+        // Initialize the information of the previous block.
+        const lastInfo = await LastBlockInfo.getInfo(this.storage, this.config);
+        if (lastInfo !== undefined) {
+            this.prev_height = lastInfo.height;
+            this.prev_hash = lastInfo.hash;
+        }
     }
 
     /**
