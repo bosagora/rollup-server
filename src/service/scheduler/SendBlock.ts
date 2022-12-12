@@ -144,12 +144,24 @@ export class SendBlock extends Scheduler {
             }
 
             if (data) {
-                await this._rollup
-                    .connect(this.managerSigner)
-                    .add(data.height, data.cur_block, data.prev_block, data.merkle_root, data.timestamp, data.CID)
-                    .then(() => {
-                        logger.info(`Successful in adding blocks to the blockchain. Height: ${data.height}`);
-                    });
+                try {
+                    await this._rollup
+                        .connect(this.managerSigner)
+                        .add(
+                            data.height,
+                            data.cur_block,
+                            data.prev_block,
+                            data.merkle_root,
+                            data.timestamp,
+                            data.CID
+                        )
+                        .then(() => {
+                            logger.info(`Successful in adding blocks to the blockchain. Height: ${data.height}`);
+                        });
+                } catch (err) {
+                    const signer = this.managerSigner as NonceManager;
+                    signer.setTransactionCount(await signer.getTransactionCount());
+                }
             } else {
                 logger.info(`This block is not ready.`);
             }
