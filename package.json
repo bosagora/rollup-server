@@ -63,7 +63,6 @@
         "bs58": "^5.0.0",
         "chai": "^4.3.6",
         "chai-http": "^4.3.0",
-        "class-transformer": "^0.5.1",
         "cors": "^2.8.5",
         "dotenv": "^10.0.0",
         "ethereum-waffle": "^3.4.0",

@@ -8,7 +8,6 @@
  *       MIT License. See LICENSE for details.
  */
 
-import { plainToClass } from "class-transformer";
 import { Block, BlockHeader, Hash, hashFull, Transaction } from "rollup-pm-sdk";
 import { Storage } from "../../modules/storage/Storage";
 import { IDatabaseConfig } from "../common/Config";
@@ -162,7 +161,7 @@ export class DBTransaction {
     public trade_id: string;
     public user_id: string;
     public state: string;
-    public amount: bigint;
+    public amount: string;
     public timestamp: number;
     public exchange_user_id: string;
     public exchange_id: string;
@@ -184,7 +183,7 @@ export class DBTransaction {
         this.trade_id = trade_id;
         this.user_id = user_id;
         this.state = state;
-        this.amount = amount;
+        this.amount = amount.toString();
         this.timestamp = timestamp;
         this.exchange_user_id = exchange_user_id;
         this.exchange_id = exchange_id;
@@ -197,9 +196,7 @@ export class DBTransaction {
     }
 
     public static make(tx: Transaction): DBTransaction {
-        const dtx: DBTransaction = plainToClass(DBTransaction, tx);
-        dtx.hash = hashFull(tx).toString();
-        return dtx;
+        return { ...tx.toJSON(), hash: hashFull(tx).toString() };
     }
 
     public static converterTxArray(dbTx: DBTransaction[]): Transaction[] {
