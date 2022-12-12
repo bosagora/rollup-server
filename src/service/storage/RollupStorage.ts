@@ -133,21 +133,23 @@ export class RollupStorage extends Storage {
         });
     }
 
-    public selectLastHeight(): Promise<number> {
-        return new Promise<number>((resolve, reject) => {
+    public selectLastHeight(): Promise<bigint | null> {
+        return new Promise((resolve, reject) => {
             this.database.all(selectBlockLastHeight, [], (err: Error | null, row) => {
                 if (err) reject(err);
-                else {
-                    if (row?.length) resolve(row[0].height);
-                    else resolve(Number.NaN);
+                if (row?.length) {
+                    if (row[0].height !== null) resolve(BigInt(row[0].height));
+                    else resolve(null);
+                } else {
+                    resolve(null);
                 }
             });
         });
     }
 
-    public selectBlockByHeight(height: number): Promise<any> {
+    public selectBlockByHeight(height: bigint): Promise<any> {
         return new Promise<any>((resolve, reject) => {
-            this.database.all(selectBlockByHeightQuery, [height], (err: Error | null, row: any) => {
+            this.database.all(selectBlockByHeightQuery, [height.toString()], (err: Error | null, row: any) => {
                 if (err) reject(err);
                 else resolve(row[0]);
             });

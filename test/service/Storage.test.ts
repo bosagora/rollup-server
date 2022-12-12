@@ -59,7 +59,7 @@ describe("Test of Storage", () => {
         it("Insert block data", async () => {
             assert.strictEqual(await storage.selectLastHeight(), null);
             const res = await storage.insertBlock(block, CID);
-            assert.strictEqual(await storage.selectLastHeight(), 1);
+            assert.strictEqual(await storage.selectLastHeight(), 1n);
         });
     });
 
