@@ -79,7 +79,7 @@
         "node-cron": "^3.0.0",
         "prettier": "^2.5.1",
         "prettier-plugin-solidity": "^1.0.0",
-        "rollup-pm-sdk": "^1.0.3",
+        "rollup-pm-sdk": "^1.0.4",
         "smart-buffer": "^4.1.0",
         "solidity-coverage": "^0.8.2",
         "sqlite3": "^5.1.2",
