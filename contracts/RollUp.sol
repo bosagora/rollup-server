@@ -78,19 +78,10 @@ contract RollUp is Ownable {
     /// @notice Get a blockheader by block height
     /// @param _height Height of the block header
     /// @return Block header of the height
-    function getByHeight(uint64 _height)
-        public
-        view
-        returns (
-            uint64,
-            bytes32,
-            bytes32,
-            bytes32,
-            uint64,
-            string memory
-        )
-    {
-        require(_height <= lastHeight, "E003: Must be not more than last height.");
+    function getByHeight(
+        uint64 _height
+    ) public view returns (uint64, bytes32, bytes32, bytes32, uint64, string memory) {
+        require(_height <= lastHeight && lastHeight != type(uint64).max, "E003: Must be not more than last height.");
         BlockHeader memory blockHeader = blockArray[_height];
         return (
             blockHeader.height,
@@ -105,18 +96,9 @@ contract RollUp is Ownable {
     /// @notice Get a blockheader by block hash
     /// @param _blockHash Block hash of the block
     /// @return Block header of the block hash
-    function getByHash(bytes32 _blockHash)
-        public
-        view
-        returns (
-            uint64,
-            bytes32,
-            bytes32,
-            bytes32,
-            uint64,
-            string memory
-        )
-    {
+    function getByHash(
+        bytes32 _blockHash
+    ) public view returns (uint64, bytes32, bytes32, bytes32, uint64, string memory) {
         require(_blockHash.length == 32, "E004: The hash length is not valid.");
         require((blockMap[_blockHash]).exists, "E005: No corresponding block hash key value.");
 
@@ -131,6 +113,23 @@ contract RollUp is Ownable {
             blockHeader.timestamp,
             blockHeader.CID
         );
+    }
+
+    /// @notice Get Block Header List
+    /// @param _height Block height to start getting
+    /// @param _size The size of the blocks
+    /// @return Block header list
+    function getByFromHeight(uint64 _height, uint8 _size) public view returns (BlockHeader[] memory) {
+        require(_size > 0 && _size <= 32, "E006: Size are allowed from 1 to 32.");
+        require(
+            (_height + (_size - 1)) <= lastHeight && lastHeight != type(uint64).max,
+            "E003: Must be not more than last height."
+        );
+
+        BlockHeader[] memory blockHeaders = new BlockHeader[](_size);
+        uint8 j = 0;
+        for (uint64 i = _height; i < (_height + _size); i++) blockHeaders[j++] = blockArray[i];
+        return blockHeaders;
     }
 
     /// @notice Get a last block height

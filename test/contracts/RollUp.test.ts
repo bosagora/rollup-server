@@ -3,7 +3,7 @@ import chai, { expect } from "chai";
 import { solidity } from "ethereum-waffle";
 import { BigNumber } from "ethers";
 import { ethers, waffle } from "hardhat";
-import { Utils } from "rollup-pm-sdk";
+import { Block, BlockHeader, Hash, hashFull, Utils } from "rollup-pm-sdk";
 import { RollUp } from "../../typechain-types";
 
 chai.use(solidity);
@@ -107,5 +107,56 @@ describe("Test of RollUp Contract", () => {
                 Utils.readFromString("0x1111111111111111111111111111111111111111111111111111111111111111")
             )
         ).to.be.revertedWith("E005: No corresponding block hash key value.");
+    });
+
+    it("Test of Get by FromHeight", async () => {
+        const admin_contract = contract.connect(admin_signer);
+        let last_height = await admin_contract.getLastHeight();
+        assert.deepStrictEqual(last_height, BigNumber.from(1));
+
+        let res_hash = await admin_contract.getByFromHeight(0, 2);
+        assert.deepStrictEqual(res_hash.length, 2);
+        assert.deepStrictEqual(res_hash[0].height, BigNumber.from(0));
+        assert.deepStrictEqual(res_hash[1].height, BigNumber.from(1));
+
+        res_hash = await admin_contract.getByFromHeight(0, 1);
+        assert.deepStrictEqual(res_hash.length, 1);
+        assert.deepStrictEqual(res_hash[0].height, BigNumber.from(0));
+
+        res_hash = await admin_contract.getByFromHeight(1, 1);
+        assert.deepStrictEqual(res_hash.length, 1);
+        assert.deepStrictEqual(res_hash[0].height, BigNumber.from(1));
+    });
+
+    it("Test of Get 32 blocks", async () => {
+        const RollUpFactory = await ethers.getContractFactory("RollUp");
+        contract = (await RollUpFactory.connect(admin_signer).deploy()) as RollUp;
+        await contract.deployed();
+        const admin_contract = contract.connect(admin_signer);
+
+        let prev_hash = Hash.Null;
+        let prev_height = -1n;
+        const cid = "CID";
+        for (let i: number = 0; i < 32; i++) {
+            const block = Block.createBlock(prev_hash, prev_height, []);
+            let header: BlockHeader = block.header;
+            let cur_hash = hashFull(header);
+            await admin_contract.add(
+                BigNumber.from(header.height),
+                Utils.readFromString(cur_hash.toString()),
+                Utils.readFromString(prev_hash.toString()),
+                Utils.readFromString(header.merkle_root.toString()),
+                header.timestamp,
+                cid
+            );
+            prev_hash = cur_hash;
+            prev_height++;
+        }
+        let last_height = await admin_contract.getLastHeight();
+        assert.deepStrictEqual(last_height, BigNumber.from(31));
+
+        let blocks = await admin_contract.getByFromHeight(0, 32);
+        assert.deepStrictEqual(blocks.length, 32);
+        assert.deepStrictEqual(blocks[31].height, BigNumber.from(31));
     });
 });
