@@ -199,6 +199,7 @@ export class Node extends Scheduler {
                     try {
                         // Save block to IPFS
                         cid = await this.ipfs.add(JSON.stringify(block));
+                        logger.info(`Saved block to IPFS - height: ${block.header.height.toString()}, CID: ${cid}`);
                     } catch {
                         success = false;
                     }
@@ -207,6 +208,7 @@ export class Node extends Scheduler {
                         try {
                             // Save block info to the database
                             await this.storage.insertBlock(block, cid);
+                            logger.info(`Saved block to DB - height: ${block.header.height.toString()}, CID: ${cid}`);
                         } catch {
                             success = false;
                         }
