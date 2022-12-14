@@ -30,7 +30,7 @@ export class IPFSManager {
      */
     constructor(api_url: string) {
         const uri = URI(api_url);
-        this.ipfs = new IPFS({ host: uri.host(), port: uri.port(), protocol: uri.protocol() });
+        this.ipfs = new IPFS({ host: uri.hostname(), port: uri.port(), protocol: uri.protocol() });
         this.test = false;
     }
 
