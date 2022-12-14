@@ -26,8 +26,8 @@ services:
      volumes:
        - "./config/:/rollup/config/"
        - "./env/:/rollup/env/"
-       - "./keystore/:/rollup/keystore/"
        - "./logs/:/rollup/logs/"
+       - "./db/:/rollup/db/"
      restart: always
      networks:
        - ipfs-network
