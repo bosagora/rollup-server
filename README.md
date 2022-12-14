@@ -15,3 +15,11 @@ $ cp env/.env.sample env/.env
 $ npx hardhat compile
 $ npx hardhat test
 ```
+
+
+## Client for Testing
+
+```bash
+$ cp env/.env.client.sample env/.env.client
+$ npm run start:client
+```
