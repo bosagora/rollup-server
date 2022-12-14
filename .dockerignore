@@ -8,6 +8,7 @@ artifacts/
 cache/
 typechain/
 logs/
+db/
 docker-compose.yml
 ipfs/
 ipfs_staging/
