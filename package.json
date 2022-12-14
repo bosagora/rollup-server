@@ -13,6 +13,7 @@
         "start:hardhat": "NODE_ENV=development node_modules/.bin/hardhat run src/main.ts",
         "start:mainnet": "NODE_ENV=production node_modules/.bin/hardhat run src/main.ts --network main_net",
         "start:testnet": "NODE_ENV=production node_modules/.bin/hardhat run src/main.ts --network test_net",
+        "start:client": "npx ts-node ./src/client.ts",
         "start": "NODE_ENV=production node_modules/.bin/hardhat run src/main.ts --network production_net",
         "lint": "node_modules/.bin/tslint --config tslint.json \"{src,test}/**/*.ts\"",
         "lint-fix": "node_modules/.bin/tslint --fix --config tslint.json \"{src,test}/**/*.ts\"",
