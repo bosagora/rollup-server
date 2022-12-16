@@ -10,14 +10,18 @@ import { RollupClient } from "./Client";
 export class RollupClientScheduler extends Scheduler {
     private client: RollupClient;
     private oldTimeStamp: number;
-    private readonly sendInterval: number;
     private lastSequence: number = -1;
     private readonly signer: Wallet;
     private users: string[];
+    private readonly minInterval: number;
+    private readonly maxInterval: number;
+    private randInterval: number;
 
     constructor() {
         super(1);
-        this.sendInterval = Number(process.env.INTERVAL || "3");
+        this.maxInterval = Number(process.env.MAXINTERVAL || "500");
+        this.minInterval = Number(process.env.MININTERVAL || "5");
+        this.randInterval = this.minInterval;
         this.signer = new Wallet(process.env.SIGNER_PRIVATE_KEY || "");
         this.client = new RollupClient();
         this.oldTimeStamp = Utils.getTimeStamp();
@@ -51,16 +55,23 @@ export class RollupClientScheduler extends Scheduler {
     }
 
     protected override async work() {
-        const newTimeStamp = Utils.getTimeStamp();
         try {
-            const old_period = Math.floor(this.oldTimeStamp / this.sendInterval);
-            const new_period = Math.floor(newTimeStamp / this.sendInterval);
+            const newTimeStamp = Utils.getTimeStamp();
+
+            const old_period = Math.floor(this.oldTimeStamp / this.randInterval);
+            const new_period = Math.floor(newTimeStamp / this.randInterval);
 
             if (old_period === new_period) return;
             this.oldTimeStamp = newTimeStamp;
 
+            this.randInterval = Math.floor(
+                Math.log(this.minInterval + Math.random() * (this.maxInterval - this.minInterval)) * 80 - 250
+            );
+            if (this.randInterval < 5) this.randInterval = 5;
+            console.log(`interval : ${this.randInterval}`);
+
             const tx = await this.makeTransactions();
-            console.log(tx.sequence);
+            console.log(`sequence : ${tx.sequence}`);
             const res = await this.client.sendTransaction(tx);
             if (res === 200) {
                 this.lastSequence++;
