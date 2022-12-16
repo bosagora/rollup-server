@@ -246,12 +246,12 @@ export class RollupRouter {
 
         try {
             const tx: Transaction = new Transaction(
-                req.body.sequence,
+                Number(req.body.sequence),
                 req.body.trade_id,
                 req.body.user_id,
                 req.body.state,
                 BigNumber.from(req.body.amount),
-                req.body.timestamp,
+                Number(req.body.timestamp),
                 req.body.exchange_user_id,
                 req.body.exchange_id,
                 req.body.signer,
