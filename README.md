@@ -16,13 +16,13 @@ cp env/.env.sample env/.env
 Running on mainnet
 
 ```shell
-npm run start:start:mainnet
+npm run start:mainnet
 ```
 
 Running on testnet
 
 ```shell
-npm run start:start:testnet
+npm run start:testnet
 ```
 
 ## Testing
