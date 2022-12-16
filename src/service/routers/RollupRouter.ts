@@ -228,7 +228,7 @@ export class RollupRouter {
             const sequence = await this.storage.getLastReceiveSequence();
             return res.json(RollupRouter.makeResponseData(200, { sequence }));
         } catch (error) {
-            logger.error("POST /tx/sequence , " + error);
+            logger.error("GET /tx/sequence , " + error);
             return res.status(500).json(
                 RollupRouter.makeResponseData(500, undefined, {
                     msg: "Failed to transaction record.",
