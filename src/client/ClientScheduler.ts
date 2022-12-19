@@ -21,7 +21,7 @@ export class RollupClientScheduler extends Scheduler {
         super(1);
         this.maxInterval = Number(process.env.MAXINTERVAL || "500");
         this.minInterval = Number(process.env.MININTERVAL || "5");
-        this.randInterval = this.minInterval;
+        this.randInterval = 10;
         this.signer = new Wallet(process.env.SIGNER_PRIVATE_KEY || "");
         this.client = new RollupClient();
         this.oldTimeStamp = Utils.getTimeStamp();
@@ -58,17 +58,23 @@ export class RollupClientScheduler extends Scheduler {
         try {
             const newTimeStamp = Utils.getTimeStamp();
 
-            const old_period = Math.floor(this.oldTimeStamp / this.randInterval);
-            const new_period = Math.floor(newTimeStamp / this.randInterval);
+            let old_period = Math.floor(this.oldTimeStamp / this.randInterval);
+            let new_period = Math.floor(newTimeStamp / this.randInterval);
 
             if (old_period === new_period) return;
-            this.oldTimeStamp = newTimeStamp;
 
-            this.randInterval = Math.floor(
-                Math.log(this.minInterval + Math.random() * (this.maxInterval - this.minInterval)) * 80 - 250
-            );
-            if (this.randInterval < 5) this.randInterval = 5;
-            console.log(`interval : ${this.randInterval}`);
+            old_period = Math.floor(this.oldTimeStamp / 600);
+            new_period = Math.floor(newTimeStamp / 600);
+
+            if (old_period !== new_period) {
+                this.randInterval = Math.floor(
+                    Math.log(this.minInterval + Math.random() * (this.maxInterval - this.minInterval)) * 80 - 250
+                );
+                if (this.randInterval < 5) this.randInterval = 5;
+                console.log(`interval : ${this.randInterval}`);
+            }
+
+            this.oldTimeStamp = newTimeStamp;
 
             const tx = await this.makeTransactions();
             console.log(`sequence : ${tx.sequence}`);
