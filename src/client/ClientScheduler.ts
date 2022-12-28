@@ -16,11 +16,14 @@ export class RollupClientScheduler extends Scheduler {
     private readonly minInterval: number;
     private readonly maxInterval: number;
     private randInterval: number;
+    private blockInterval: number;
 
     constructor() {
         super(1);
         this.maxInterval = Number(process.env.MAXINTERVAL || "500");
         this.minInterval = Number(process.env.MININTERVAL || "5");
+        this.blockInterval = Number(process.env.BLOCK_INTERVAL || "600");
+
         this.randInterval = 10;
         this.signer = new Wallet(process.env.SIGNER_PRIVATE_KEY || "");
         this.client = new RollupClient();
@@ -67,8 +70,10 @@ export class RollupClientScheduler extends Scheduler {
             new_period = Math.floor(newTimeStamp / 600);
 
             if (old_period !== new_period) {
+                const factor = 600 / this.blockInterval;
                 this.randInterval = Math.floor(
-                    Math.log(this.minInterval + Math.random() * (this.maxInterval - this.minInterval)) * 80 - 250
+                    (Math.log(this.minInterval + Math.random() * (this.maxInterval - this.minInterval)) * 80 - 250) /
+                        factor
                 );
                 if (this.randInterval < 5) this.randInterval = 5;
                 console.log(`interval : ${this.randInterval}`);
