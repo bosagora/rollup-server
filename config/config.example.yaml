@@ -21,7 +21,7 @@ logging:
 node:
   interval: 600
   max_txs: 256
-  send_interval: 14
+  send_interval: 30
   ipfs_api_url: https://api-ipfs.bosagora.info
   ipfs_gateway_url: https://ipfs.bosagora.info
   ipfs_test: false

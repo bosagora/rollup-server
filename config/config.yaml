@@ -21,7 +21,7 @@ logging:
 node:
   interval: 600
   max_txs: 256
-  send_interval: 14
+  send_interval: 30
   ipfs_api_url: http://ipfs:5001
   ipfs_gateway_url: http://ipfs:8080
   ipfs_test: true
